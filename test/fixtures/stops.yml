@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  address: one
+  route: one
+  step: 1
+  await_return: false
+  total_student_number: 1
+
+two:
+  address: two
+  route: two
+  step: 1
+  await_return: false
+  total_student_number: 1
