@@ -1,0 +1,26 @@
+<% content_for :title, "Entrar" %>
+
+<main class="auth-page">
+  <div class="auth-card">
+    <h1>Entrar</h1>
+
+    <%= form_with url: login_path, method: :post, local: true, class: "auth-form" do |form| %>
+      <div class="field">
+        <%= form.label :username, "Usuário" %>
+        <%= form.text_field :username, required: true, autofocus: true %>
+      </div>
+
+      <div class="field">
+        <%= form.label :password, "Senha" %>
+        <%= form.password_field :password, required: true %>
+      </div>
+
+      <%= form.submit "Entrar", class: "btn btn-primary" %>
+    <% end %>
+
+    <p class="auth-alt-action">
+      Ainda não tem conta?
+      <%= link_to "Cadastre-se", new_registration_path, class: "btn btn-secondary" %>
+    </p>
+  </div>
+</main>

@@ -1,15 +1,17 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
+  name: User One
   role: MyString
-  username: MyString
+  username: user_one
   password_digest: MyString
   is_active: false
   company: one
 
 two:
+  name: User Two
   role: MyString
-  username: MyString
+  username: user_two
   password_digest: MyString
   is_active: false
   company: two

@@ -1,0 +1,8 @@
+<% content_for :title, "Início" %>
+
+<main class="page">
+  <h1>Olá, <%= current_user.name %>!</h1>
+  <p><%= current_user.owned_company.name %> &middot; cadastro concluído.</p>
+
+  <%= button_to "Sair", logout_path, method: :delete, class: "btn btn-secondary" %>
+</main>
