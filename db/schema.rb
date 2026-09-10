@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_08_30_192352) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_10_130707) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -68,6 +68,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_192352) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["address_id"], name: "index_companies_on_address_id"
+    t.index ["cnpj"], name: "index_companies_on_cnpj", unique: true
     t.index ["user_id"], name: "index_companies_on_user_id"
   end
 
@@ -75,7 +76,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_192352) do
     t.date "birthdate"
     t.datetime "created_at", null: false
     t.string "drive_license"
-    t.string "name"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["user_id"], name: "index_drivers_on_user_id"
@@ -116,7 +116,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_192352) do
     t.string "cpf"
     t.datetime "created_at", null: false
     t.string "gender"
-    t.string "name"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["address_id"], name: "index_students_on_address_id"
@@ -128,11 +127,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_08_30_192352) do
     t.bigint "company_id"
     t.datetime "created_at", null: false
     t.boolean "is_active"
+    t.string "name"
     t.string "password_digest"
     t.string "role"
     t.datetime "updated_at", null: false
     t.string "username"
     t.index ["company_id"], name: "index_users_on_company_id"
+    t.index ["username"], name: "index_users_on_username", unique: true
   end
 
   create_table "vehicle_drivers", force: :cascade do |t|

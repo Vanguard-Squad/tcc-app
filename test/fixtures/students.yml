@@ -1,7 +1,6 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  name: MyString
   cpf: MyString
   birthdate: 2026-08-30
   gender: MyString
@@ -10,7 +9,6 @@ one:
   college: one
 
 two:
-  name: MyString
   cpf: MyString
   birthdate: 2026-08-30
   gender: MyString
