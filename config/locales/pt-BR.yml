@@ -58,6 +58,7 @@ pt-BR:
       college: "Faculdade"
       student: "Aluno"
       driver: "Motorista"
+      vehicle: "Ônibus"
     attributes:
       user:
         name: "Nome"
@@ -88,3 +89,7 @@ pt-BR:
       driver:
         birthdate: "Data de nascimento"
         drive_license: "CNH"
+      vehicle:
+        license_plate: "Placa"
+        seats: "Quantidade de assentos"
+        route: "Rota"
