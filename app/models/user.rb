@@ -10,9 +10,12 @@ class User < ApplicationRecord
 
   normalizes :username, with: ->(username) { username.strip.downcase }
 
+  enum :role, { owner: "owner", manager: "manager", student: "student", driver: "driver" }
+
   validates :name, presence: true
   validates :username, presence: true, uniqueness: { case_sensitive: false }
   validates :password, length: { minimum: 8 }, allow_nil: true
+  validates :role, presence: true
 
   def registration_complete?
     owned_company.present?
