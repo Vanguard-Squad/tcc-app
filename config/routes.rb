@@ -34,4 +34,6 @@ Rails.application.routes.draw do
 
   get  "/membros/alunos/novo", to: "members/students#new", as: :new_member_student
   post "/membros/alunos",      to: "members/students#create", as: :member_students
+
+  resources :vehicles, path: "frota", only: %i[index new create]
 end

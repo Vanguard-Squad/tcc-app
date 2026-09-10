@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_10_134329) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_10_145902) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -161,13 +161,14 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_134329) do
   create_table "vehicles", force: :cascade do |t|
     t.bigint "company_id", null: false
     t.datetime "created_at", null: false
-    t.boolean "is_active"
+    t.boolean "is_active", default: true
     t.string "license_plate"
-    t.bigint "route_id", null: false
+    t.bigint "route_id"
     t.integer "seats"
-    t.integer "seats_busy"
+    t.integer "seats_busy", default: 0
     t.datetime "updated_at", null: false
     t.index ["company_id"], name: "index_vehicles_on_company_id"
+    t.index ["license_plate"], name: "index_vehicles_on_license_plate", unique: true
     t.index ["route_id"], name: "index_vehicles_on_route_id"
   end
 

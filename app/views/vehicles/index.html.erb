@@ -1,0 +1,32 @@
+<% content_for :title, "Frota" %>
+
+<main class="page">
+  <div class="page-header">
+    <h1>Frota</h1>
+    <%= link_to "Cadastrar ônibus", new_vehicle_path, class: "btn btn-primary btn-inline" %>
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Placa</th>
+        <th>Assentos</th>
+        <th>Rota</th>
+        <th>Situação</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @vehicles.each do |vehicle| %>
+        <tr>
+          <td><%= vehicle.license_plate %></td>
+          <td><%= vehicle.seats_busy %> / <%= vehicle.seats %></td>
+          <td><%= vehicle.route&.name || "Sem rota" %></td>
+          <td><%= vehicle.is_active? ? "Ativo" : "Inativo" %></td>
+        </tr>
+      <% end %>
+      <% if @vehicles.empty? %>
+        <tr><td colspan="4">Nenhum ônibus cadastrado ainda.</td></tr>
+      <% end %>
+    </tbody>
+  </table>
+</main>

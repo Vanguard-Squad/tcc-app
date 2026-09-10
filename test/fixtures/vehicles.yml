@@ -3,7 +3,7 @@
 one:
   seats_busy: 1
   seats: 1
-  license_plate: MyString
+  license_plate: ABC-1111
   company: one
   route: one
   is_active: false
@@ -11,7 +11,7 @@ one:
 two:
   seats_busy: 1
   seats: 1
-  license_plate: MyString
+  license_plate: ABC-2222
   company: two
   route: two
   is_active: false

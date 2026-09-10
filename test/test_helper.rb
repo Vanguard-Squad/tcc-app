@@ -57,6 +57,10 @@ module RegistrationTestHelpers
     user.save!
     user
   end
+
+  def create_vehicle!(company:)
+    company.vehicles.create!(license_plate: "PLT-#{SecureRandom.hex(3).upcase}", seats: 20)
+  end
 end
 
 module ActiveSupport

@@ -1,0 +1,21 @@
+<% content_for :title, "Cadastrar ônibus" %>
+
+<main class="page page-narrow">
+  <h1>Cadastrar ônibus</h1>
+
+  <%= render "shared/form_errors", object: @vehicle %>
+
+  <%= form_with model: @vehicle, url: vehicles_path, local: true, class: "auth-form" do |form| %>
+    <div class="field">
+      <%= form.label :license_plate, "Placa" %>
+      <%= form.text_field :license_plate, required: true, autofocus: true %>
+    </div>
+
+    <div class="field">
+      <%= form.label :seats, "Quantidade de assentos" %>
+      <%= form.number_field :seats, required: true, min: 1 %>
+    </div>
+
+    <%= form.submit "Cadastrar", class: "btn btn-primary" %>
+  <% end %>
+</main>

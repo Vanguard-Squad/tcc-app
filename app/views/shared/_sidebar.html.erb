@@ -1,0 +1,15 @@
+<nav class="sidebar">
+  <div class="sidebar-brand">Tcc App</div>
+
+  <div class="sidebar-links">
+    <%= link_to "Início", root_path, class: "sidebar-link" %>
+
+    <% if current_user.owner? || current_user.manager? %>
+      <%= link_to "Membros", members_path, class: "sidebar-link" %>
+      <%= link_to "Faculdades", colleges_path, class: "sidebar-link" %>
+      <%= link_to "Frota", vehicles_path, class: "sidebar-link" %>
+    <% end %>
+  </div>
+
+  <%= button_to "Sair", logout_path, method: :delete, class: "sidebar-link sidebar-link-button" %>
+</nav>

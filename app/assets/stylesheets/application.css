@@ -169,33 +169,62 @@ body {
   padding-left: 1.1rem;
 }
 
-.app-nav {
+.app-shell {
   display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  padding: 1rem 1.5rem;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  min-height: 100vh;
 }
 
-.app-nav-link {
+.app-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1rem;
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+}
+
+.sidebar-brand {
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 0 0.75rem 1.5rem;
+}
+
+.sidebar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.sidebar-link {
+  display: block;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
   color: var(--color-text);
   text-decoration: none;
   font-weight: 600;
   font-size: 0.9rem;
+  text-align: left;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
-.app-nav-link:hover {
+.sidebar-link:hover {
+  background: var(--color-bg);
   color: var(--color-primary);
 }
 
-.app-nav-link-button {
-  margin-left: auto;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
+.sidebar-link-button {
   color: var(--color-muted);
+  margin-top: 1rem;
 }
 
 .page {
