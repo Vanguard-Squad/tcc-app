@@ -1,0 +1,60 @@
+<% content_for :title, "Cadastrar empresa" %>
+
+<main class="auth-page">
+  <div class="auth-card">
+    <p class="wizard-step">Etapa 2 de 2 &middot; Sua empresa</p>
+    <h1>Cadastre sua empresa</h1>
+
+    <%= render "shared/form_errors", object: @company %>
+
+    <%= form_with model: @company, url: registration_companies_path, local: true, class: "auth-form" do |form| %>
+      <div class="field">
+        <%= form.label :name, "Nome da empresa" %>
+        <%= form.text_field :name, required: true, autofocus: true %>
+      </div>
+
+      <div class="field">
+        <%= form.label :cnpj, "CNPJ" %>
+        <%= form.text_field :cnpj, required: true %>
+      </div>
+
+      <%= form.fields_for :address do |address_form| %>
+        <div class="field">
+          <%= address_form.label :street, "Rua" %>
+          <%= address_form.text_field :street, required: true %>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <%= address_form.label :number, "Número" %>
+            <%= address_form.number_field :number, required: true %>
+          </div>
+
+          <div class="field">
+            <%= address_form.label :complement, "Complemento" %>
+            <%= address_form.text_field :complement %>
+          </div>
+        </div>
+
+        <div class="field">
+          <%= address_form.label :neighborhood, "Bairro" %>
+          <%= address_form.text_field :neighborhood, required: true %>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <%= address_form.label :zip_code, "CEP" %>
+            <%= address_form.text_field :zip_code, required: true %>
+          </div>
+
+          <div class="field">
+            <%= address_form.label :country, "País" %>
+            <%= address_form.text_field :country, required: true %>
+          </div>
+        </div>
+      <% end %>
+
+      <%= form.submit "Concluir cadastro", class: "btn btn-primary" %>
+    <% end %>
+  </div>
+</main>

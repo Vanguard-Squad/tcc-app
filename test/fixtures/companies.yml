@@ -2,12 +2,12 @@
 
 one:
   name: MyString
-  cnpj: MyString
-  user: one
+  cnpj: "11111111000191"
+  owner: one
   address: one
 
 two:
   name: MyString
-  cnpj: MyString
-  user: two
+  cnpj: "22222222000172"
+  owner: two
   address: two

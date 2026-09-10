@@ -1,0 +1,54 @@
+<% content_for :title, "Cadastrar faculdade" %>
+
+<%= render "shared/nav" %>
+
+<main class="page page-narrow">
+  <h1>Cadastrar faculdade</h1>
+
+  <%= render "shared/form_errors", object: @college %>
+
+  <%= form_with model: @college, url: colleges_path, local: true, class: "auth-form" do |form| %>
+    <div class="field">
+      <%= form.label :name, "Nome" %>
+      <%= form.text_field :name, required: true, autofocus: true %>
+    </div>
+
+    <%= form.fields_for :address do |address_form| %>
+      <div class="field">
+        <%= address_form.label :street, "Rua" %>
+        <%= address_form.text_field :street, required: true %>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <%= address_form.label :number, "Número" %>
+          <%= address_form.number_field :number, required: true %>
+        </div>
+
+        <div class="field">
+          <%= address_form.label :complement, "Complemento" %>
+          <%= address_form.text_field :complement %>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= address_form.label :neighborhood, "Bairro" %>
+        <%= address_form.text_field :neighborhood, required: true %>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <%= address_form.label :zip_code, "CEP" %>
+          <%= address_form.text_field :zip_code, required: true %>
+        </div>
+
+        <div class="field">
+          <%= address_form.label :country, "País" %>
+          <%= address_form.text_field :country, required: true %>
+        </div>
+      </div>
+    <% end %>
+
+    <%= form.submit "Cadastrar", class: "btn btn-primary" %>
+  <% end %>
+</main>

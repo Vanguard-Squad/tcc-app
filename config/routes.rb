@@ -10,5 +10,28 @@ Rails.application.routes.draw do
   # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
 
   # Defines the root path route ("/")
-  # root "posts#index"
+  root "home#index"
+
+  get    "/login",  to: "sessions#new", as: :login
+  post   "/login",  to: "sessions#create"
+  delete "/logout", to: "sessions#destroy", as: :logout
+
+  get  "/cadastro", to: "registrations#new", as: :new_registration
+  post "/cadastro", to: "registrations#create", as: :registrations
+
+  get  "/cadastro/empresa", to: "registrations/companies#new", as: :new_registration_company
+  post "/cadastro/empresa", to: "registrations/companies#create", as: :registration_companies
+
+  resources :colleges, only: %i[index new create]
+
+  get "/membros", to: "members#index", as: :members
+
+  get  "/membros/secretarias/novo", to: "members/managers#new", as: :new_member_manager
+  post "/membros/secretarias",      to: "members/managers#create", as: :member_managers
+
+  get  "/membros/motoristas/novo", to: "members/drivers#new", as: :new_member_driver
+  post "/membros/motoristas",      to: "members/drivers#create", as: :member_drivers
+
+  get  "/membros/alunos/novo", to: "members/students#new", as: :new_member_student
+  post "/membros/alunos",      to: "members/students#create", as: :member_students
 end
