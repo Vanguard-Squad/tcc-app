@@ -1,4 +1,4 @@
 class College < ApplicationRecord
-  belongs_to :address, optional: true
+  belongs_to :address
   has_many :students
 end
