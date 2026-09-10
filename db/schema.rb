@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_10_130707) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_10_132326) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -78,6 +78,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_130707) do
     t.string "drive_license"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["drive_license"], name: "index_drivers_on_drive_license", unique: true
     t.index ["user_id"], name: "index_drivers_on_user_id"
   end
 
@@ -120,6 +121,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_10_130707) do
     t.bigint "user_id", null: false
     t.index ["address_id"], name: "index_students_on_address_id"
     t.index ["college_id"], name: "index_students_on_college_id"
+    t.index ["cpf"], name: "index_students_on_cpf", unique: true
     t.index ["user_id"], name: "index_students_on_user_id"
   end
 

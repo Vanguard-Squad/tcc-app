@@ -1,0 +1,43 @@
+<% content_for :title, "Membros" %>
+
+<%= render "shared/nav" %>
+
+<main class="page">
+  <div class="page-header">
+    <h1>Membros</h1>
+    <div class="page-header-actions">
+      <% if current_user.owner? %>
+        <%= link_to "Cadastrar secretaria", new_member_manager_path, class: "btn btn-secondary btn-inline" %>
+      <% end %>
+      <%= link_to "Cadastrar motorista", new_member_driver_path, class: "btn btn-secondary btn-inline" %>
+      <%= link_to "Cadastrar aluno", new_member_student_path, class: "btn btn-primary btn-inline" %>
+    </div>
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Usuário</th>
+        <th>Papel</th>
+        <th>Detalhes</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @members.each do |member| %>
+        <tr>
+          <td><%= member.name %></td>
+          <td><%= member.username %></td>
+          <td><%= role_label(member.role) %></td>
+          <td>
+            <% if member.driver? && member.driver %>
+              CNH: <%= member.driver.drive_license %>
+            <% elsif member.student? && member.student %>
+              CPF: <%= member.student.cpf %> &middot; <%= member.student.college.name %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</main>

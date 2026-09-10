@@ -5,4 +5,8 @@ class Student < ApplicationRecord
   has_many :vehicle_students
   has_many :vehicles, through: :vehicle_students
   has_many :checkins
+
+  accepts_nested_attributes_for :address
+
+  validates :cpf, presence: true, uniqueness: true
 end

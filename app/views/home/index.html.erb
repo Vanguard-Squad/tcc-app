@@ -1,8 +1,8 @@
 <% content_for :title, "Início" %>
 
+<%= render "shared/nav" %>
+
 <main class="page">
   <h1>Olá, <%= current_user.name %>!</h1>
-  <p><%= current_user.owned_company.name %> &middot; cadastro concluído.</p>
-
-  <%= button_to "Sair", logout_path, method: :delete, class: "btn btn-secondary" %>
+  <p><%= current_company.name %> &middot; <%= role_label(current_user.role) %></p>
 </main>

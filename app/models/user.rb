@@ -10,6 +10,9 @@ class User < ApplicationRecord
 
   normalizes :username, with: ->(username) { username.strip.downcase }
 
+  accepts_nested_attributes_for :student
+  accepts_nested_attributes_for :driver
+
   enum :role, { owner: "owner", manager: "manager", student: "student", driver: "driver" }
 
   validates :name, presence: true
