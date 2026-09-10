@@ -1,6 +1,6 @@
 class Vehicle < ApplicationRecord
   belongs_to :company
-  belongs_to :route, optional: true
+  belongs_to :route
   has_many :vehicle_drivers
   has_many :drivers, through: :vehicle_drivers
   has_many :vehicle_students
