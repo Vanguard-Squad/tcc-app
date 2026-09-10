@@ -21,6 +21,6 @@ class User < ApplicationRecord
   validates :role, presence: true
 
   def registration_complete?
-    owned_company.present?
+    company_id.present?
   end
 end
