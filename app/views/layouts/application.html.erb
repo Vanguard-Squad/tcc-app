@@ -24,13 +24,30 @@
   </head>
 
   <body>
-    <% if notice.present? %>
-      <p class="flash flash-notice"><%= notice %></p>
-    <% end %>
-    <% if alert.present? %>
-      <p class="flash flash-alert"><%= alert %></p>
-    <% end %>
+    <% if user_signed_in? %>
+      <div class="app-shell">
+        <%= render "shared/sidebar" %>
 
-    <%= yield %>
+        <div class="app-content">
+          <% if notice.present? %>
+            <p class="flash flash-notice"><%= notice %></p>
+          <% end %>
+          <% if alert.present? %>
+            <p class="flash flash-alert"><%= alert %></p>
+          <% end %>
+
+          <%= yield %>
+        </div>
+      </div>
+    <% else %>
+      <% if notice.present? %>
+        <p class="flash flash-notice"><%= notice %></p>
+      <% end %>
+      <% if alert.present? %>
+        <p class="flash flash-alert"><%= alert %></p>
+      <% end %>
+
+      <%= yield %>
+    <% end %>
   </body>
 </html>
