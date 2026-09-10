@@ -1,0 +1,30 @@
+<% content_for :title, "Faculdades" %>
+
+<%= render "shared/nav" %>
+
+<main class="page">
+  <div class="page-header">
+    <h1>Faculdades</h1>
+    <%= link_to "Cadastrar faculdade", new_college_path, class: "btn btn-primary btn-inline" %>
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>Nome</th>
+        <th>Endereço</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @colleges.each do |college| %>
+        <tr>
+          <td><%= college.name %></td>
+          <td><%= college.address.street %>, <%= college.address.number %> &middot; <%= college.address.neighborhood %></td>
+        </tr>
+      <% end %>
+      <% if @colleges.empty? %>
+        <tr><td colspan="2">Nenhuma faculdade cadastrada ainda.</td></tr>
+      <% end %>
+    </tbody>
+  </table>
+</main>

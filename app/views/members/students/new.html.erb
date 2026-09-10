@@ -1,0 +1,100 @@
+<% content_for :title, "Cadastrar aluno" %>
+
+<%= render "shared/nav" %>
+
+<main class="page page-narrow">
+  <h1>Cadastrar aluno</h1>
+
+  <%= render "shared/form_errors", object: @user %>
+
+  <% if @colleges.empty? %>
+    <p class="form-errors">
+      Nenhuma faculdade cadastrada ainda.
+      <%= link_to "Cadastre uma faculdade", new_college_path %> antes de cadastrar um aluno.
+    </p>
+  <% end %>
+
+  <%= form_with model: @user, url: member_students_path, local: true, class: "auth-form" do |form| %>
+    <div class="field">
+      <%= form.label :name, "Nome" %>
+      <%= form.text_field :name, required: true, autofocus: true %>
+    </div>
+
+    <div class="field">
+      <%= form.label :username, "Usuário" %>
+      <%= form.text_field :username, required: true %>
+    </div>
+
+    <div class="field">
+      <%= form.label :password, "Senha" %>
+      <%= form.password_field :password, required: true, minlength: 8 %>
+    </div>
+
+    <div class="field">
+      <%= form.label :password_confirmation, "Confirmar senha" %>
+      <%= form.password_field :password_confirmation, required: true, minlength: 8 %>
+    </div>
+
+    <%= form.fields_for :student do |student_form| %>
+      <div class="field">
+        <%= student_form.label :cpf, "CPF" %>
+        <%= student_form.text_field :cpf, required: true %>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <%= student_form.label :birthdate, "Data de nascimento" %>
+          <%= student_form.date_field :birthdate, required: true %>
+        </div>
+
+        <div class="field">
+          <%= student_form.label :gender, "Gênero" %>
+          <%= student_form.text_field :gender %>
+        </div>
+      </div>
+
+      <div class="field">
+        <%= student_form.label :college_id, "Faculdade" %>
+        <%= student_form.collection_select :college_id, @colleges, :id, :name, { prompt: "Selecione" }, required: true %>
+      </div>
+
+      <%= student_form.fields_for :address do |address_form| %>
+        <div class="field">
+          <%= address_form.label :street, "Rua" %>
+          <%= address_form.text_field :street, required: true %>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <%= address_form.label :number, "Número" %>
+            <%= address_form.number_field :number, required: true %>
+          </div>
+
+          <div class="field">
+            <%= address_form.label :complement, "Complemento" %>
+            <%= address_form.text_field :complement %>
+          </div>
+        </div>
+
+        <div class="field">
+          <%= address_form.label :neighborhood, "Bairro" %>
+          <%= address_form.text_field :neighborhood, required: true %>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <%= address_form.label :zip_code, "CEP" %>
+            <%= address_form.text_field :zip_code, required: true %>
+          </div>
+
+          <div class="field">
+            <%= address_form.label :country, "País" %>
+            <%= address_form.text_field :country, required: true %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+
+    <%= form.submit "Cadastrar", class: "btn btn-primary" %>
+  <% end %>
+</main>

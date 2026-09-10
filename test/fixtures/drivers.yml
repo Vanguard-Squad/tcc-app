@@ -2,10 +2,10 @@
 
 one:
   birthdate: 2026-08-30
-  drive_license: MyString
+  drive_license: "11111111111"
   user: one
 
 two:
   birthdate: 2026-08-30
-  drive_license: MyString
+  drive_license: "22222222222"
   user: two
