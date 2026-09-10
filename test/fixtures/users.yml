@@ -2,7 +2,7 @@
 
 one:
   name: User One
-  role: MyString
+  role: owner
   username: user_one
   password_digest: MyString
   is_active: false
@@ -10,7 +10,7 @@ one:
 
 two:
   name: User Two
-  role: MyString
+  role: manager
   username: user_two
   password_digest: MyString
   is_active: false

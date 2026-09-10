@@ -9,6 +9,7 @@ class RegistrationsController < ApplicationController
   def create
     @user = User.new(account_params)
     @user.is_active = true
+    @user.role = :owner
 
     if @user.save
       start_new_session_for(@user)
