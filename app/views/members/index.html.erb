@@ -16,7 +16,7 @@
     <thead>
       <tr>
         <th>Nome</th>
-        <th>Usuário</th>
+        <th>E-mail</th>
         <th>Papel</th>
         <th>Detalhes</th>
       </tr>
@@ -25,13 +25,13 @@
       <% @members.each do |member| %>
         <tr>
           <td><%= member.name %></td>
-          <td><%= member.username %></td>
+          <td><%= member.email %></td>
           <td><%= role_label(member.role) %></td>
           <td>
             <% if member.driver? && member.driver %>
               CNH: <%= member.driver.drive_license %>
             <% elsif member.student? && member.student %>
-              CPF: <%= member.student.cpf %> &middot; <%= member.student.college.name %>
+              CPF: <%= member.student.cpf %> &middot; <%= member.student.college.label_with_city %>
             <% end %>
           </td>
         </tr>

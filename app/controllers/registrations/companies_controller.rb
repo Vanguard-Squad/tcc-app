@@ -23,7 +23,7 @@ module Registrations
       def company_params
         params.require(:company).permit(
           :name, :cnpj,
-          address_attributes: %i[street number complement neighborhood country zip_code]
+          address_attributes: %i[street number complement neighborhood city country zip_code]
         )
       end
 

@@ -10,7 +10,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "logs in but redirects to the company step when registration is incomplete" do
-    owner = User.create!(name: "Sem Empresa", username: "semempresa_#{SecureRandom.hex(4)}", password: RegistrationTestHelpers::PASSWORD, role: :owner, is_active: true)
+    owner = User.create!(name: "Sem Empresa", email: "semempresa_#{SecureRandom.hex(4)}@example.com", password: RegistrationTestHelpers::PASSWORD, role: :owner, is_active: true)
 
     sign_in(owner)
 
@@ -20,7 +20,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
   test "rejects an invalid password" do
     owner, = create_company_with_owner!
 
-    post login_url, params: { username: owner.username, password: "senha_errada" }
+    post login_url, params: { email: owner.email, password: "senha_errada" }
 
     assert_response :unprocessable_entity
     assert_select ".flash-alert", text: "Usuário ou senha inválidos."
@@ -30,7 +30,7 @@ class SessionsControllerTest < ActionDispatch::IntegrationTest
     owner, = create_company_with_owner!
     owner.update!(is_active: false)
 
-    post login_url, params: { username: owner.username, password: RegistrationTestHelpers::PASSWORD }
+    post login_url, params: { email: owner.email, password: RegistrationTestHelpers::PASSWORD }
 
     assert_response :unprocessable_entity
   end

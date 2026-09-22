@@ -5,8 +5,8 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_difference "User.count", 1 do
       post registrations_url, params: {
         user: {
-          name: "Nova Dona", username: "nova_dona_#{SecureRandom.hex(4)}",
-          password: "senhasegura123", password_confirmation: "senhasegura123"
+          name: "Nova Dona", email: "nova_dona_#{SecureRandom.hex(4)}@example.com",
+          password: "Senha@segura123", password_confirmation: "Senha@segura123"
         }
       }
     end
@@ -23,8 +23,8 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
     assert_no_difference "User.count" do
       post registrations_url, params: {
         user: {
-          name: "Falha", username: "falha_#{SecureRandom.hex(4)}",
-          password: "senhasegura123", password_confirmation: "outra_senha"
+          name: "Falha", email: "falha_#{SecureRandom.hex(4)}@example.com",
+          password: "Senha@segura123", password_confirmation: "outra_senha"
         }
       }
     end
@@ -33,7 +33,7 @@ class RegistrationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "an already signed in user with incomplete registration is redirected to the company step" do
-    owner = User.create!(name: "Meio Cadastro", username: "meio_#{SecureRandom.hex(4)}", password: RegistrationTestHelpers::PASSWORD, role: :owner, is_active: true)
+    owner = User.create!(name: "Meio Cadastro", email: "meio_#{SecureRandom.hex(4)}@example.com", password: RegistrationTestHelpers::PASSWORD, role: :owner, is_active: true)
     sign_in(owner)
 
     get new_registration_url

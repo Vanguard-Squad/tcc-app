@@ -22,8 +22,6 @@ Rails.application.routes.draw do
   get  "/cadastro/empresa", to: "registrations/companies#new", as: :new_registration_company
   post "/cadastro/empresa", to: "registrations/companies#create", as: :registration_companies
 
-  resources :colleges, only: %i[index new create]
-
   get "/membros", to: "members#index", as: :members
 
   get  "/membros/secretarias/novo", to: "members/managers#new", as: :new_member_manager
@@ -36,4 +34,5 @@ Rails.application.routes.draw do
   post "/membros/alunos",      to: "members/students#create", as: :member_students
 
   resources :vehicles, path: "frota", only: %i[index new create]
+  resources :routes, path: "rotas", only: %i[index new create]
 end

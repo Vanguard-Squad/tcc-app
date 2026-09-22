@@ -21,7 +21,7 @@ module Members
 
     private
       def manager_params
-        params.require(:user).permit(:name, :username, :password, :password_confirmation)
+        params.require(:user).permit(:name, :email, :password, :password_confirmation)
       end
   end
 end

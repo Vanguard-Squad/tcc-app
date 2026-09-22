@@ -24,7 +24,7 @@
   </head>
 
   <body>
-    <% if user_signed_in? %>
+    <% if user_signed_in? && current_user.registration_complete? %>
       <div class="app-shell">
         <%= render "shared/sidebar" %>
 

@@ -5,13 +5,6 @@
 
   <%= render "shared/form_errors", object: @user %>
 
-  <% if @colleges.empty? %>
-    <p class="form-errors">
-      Nenhuma faculdade cadastrada ainda.
-      <%= link_to "Cadastre uma faculdade", new_college_path %> antes de cadastrar um aluno.
-    </p>
-  <% end %>
-
   <%= form_with model: @user, url: member_students_path, local: true, class: "auth-form" do |form| %>
     <div class="field">
       <%= form.label :name, "Nome" %>
@@ -19,13 +12,16 @@
     </div>
 
     <div class="field">
-      <%= form.label :username, "Usuário" %>
-      <%= form.text_field :username, required: true %>
+      <%= form.label :email, "E-mail" %>
+      <%= form.email_field :email, required: true %>
     </div>
 
     <div class="field">
       <%= form.label :password, "Senha" %>
-      <%= form.password_field :password, required: true, minlength: 8 %>
+      <%= form.password_field :password, required: true, minlength: 8,
+            pattern: "(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9\\s]).{8,}",
+            title: "Mínimo de 8 caracteres, com letra maiúscula, minúscula e caractere especial" %>
+      <p class="field-hint">Mínimo de 8 caracteres, com letra maiúscula, minúscula e caractere especial.</p>
     </div>
 
     <div class="field">
@@ -51,43 +47,119 @@
         </div>
       </div>
 
-      <div class="field">
+      <div class="field" data-controller="toggle-fields">
         <%= student_form.label :college_id, "Faculdade" %>
-        <%= student_form.collection_select :college_id, @colleges, :id, :name, { prompt: "Selecione" }, required: true %>
+
+        <div data-toggle-fields-target="existing">
+          <%= student_form.select :college_id, options_for_select(@colleges), { prompt: "Selecione" } %>
+          <p class="field-hint">
+            Não encontrou a faculdade?
+            <button type="button" data-action="toggle-fields#showNew" class="link-button">Cadastrar nova faculdade</button>
+          </p>
+        </div>
+
+        <fieldset data-toggle-fields-target="new" hidden class="nested-fieldset">
+          <legend>Nova faculdade</legend>
+
+          <%= student_form.fields_for :college do |college_form| %>
+            <div class="field">
+              <%= college_form.label :name, "Nome da faculdade" %>
+              <%= college_form.text_field :name, required: true %>
+            </div>
+
+            <%= college_form.fields_for :address do |college_address_form| %>
+              <div data-controller="cep-lookup">
+                <div class="field">
+                  <%= college_address_form.label :zip_code, "CEP" %>
+                  <%= college_address_form.text_field :zip_code, required: true,
+                        data: { "cep-lookup-target": "zipCode", action: "input->cep-lookup#lookup" } %>
+                  <p class="field-hint">Digite o CEP para preencher rua, bairro e cidade automaticamente.</p>
+                </div>
+
+                <div class="field">
+                  <%= college_address_form.label :street, "Rua" %>
+                  <%= college_address_form.text_field :street, required: true, data: { "cep-lookup-target": "street" } %>
+                </div>
+
+                <div class="field-row">
+                  <div class="field">
+                    <%= college_address_form.label :number, "Número" %>
+                    <%= college_address_form.number_field :number, required: true %>
+                  </div>
+
+                  <div class="field">
+                    <%= college_address_form.label :complement, "Complemento" %>
+                    <%= college_address_form.text_field :complement %>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <%= college_address_form.label :neighborhood, "Bairro" %>
+                  <%= college_address_form.text_field :neighborhood, required: true, data: { "cep-lookup-target": "neighborhood" } %>
+                </div>
+
+                <div class="field-row">
+                  <div class="field">
+                    <%= college_address_form.label :city, "Cidade" %>
+                    <%= college_address_form.text_field :city, required: true, data: { "cep-lookup-target": "city" } %>
+                  </div>
+
+                  <div class="field">
+                    <%= college_address_form.label :country, "País" %>
+                    <%= college_address_form.text_field :country, required: true %>
+                  </div>
+                </div>
+              </div>
+            <% end %>
+          <% end %>
+
+          <p class="field-hint">
+            <button type="button" data-action="toggle-fields#showExisting" class="link-button">Selecionar faculdade existente</button>
+          </p>
+        </fieldset>
       </div>
 
       <%= student_form.fields_for :address do |address_form| %>
-        <div class="field">
-          <%= address_form.label :street, "Rua" %>
-          <%= address_form.text_field :street, required: true %>
-        </div>
-
-        <div class="field-row">
-          <div class="field">
-            <%= address_form.label :number, "Número" %>
-            <%= address_form.number_field :number, required: true %>
-          </div>
-
-          <div class="field">
-            <%= address_form.label :complement, "Complemento" %>
-            <%= address_form.text_field :complement %>
-          </div>
-        </div>
-
-        <div class="field">
-          <%= address_form.label :neighborhood, "Bairro" %>
-          <%= address_form.text_field :neighborhood, required: true %>
-        </div>
-
-        <div class="field-row">
+        <div data-controller="cep-lookup">
           <div class="field">
             <%= address_form.label :zip_code, "CEP" %>
-            <%= address_form.text_field :zip_code, required: true %>
+            <%= address_form.text_field :zip_code, required: true,
+                  data: { "cep-lookup-target": "zipCode", action: "input->cep-lookup#lookup" } %>
+            <p class="field-hint">Digite o CEP para preencher rua, bairro e cidade automaticamente.</p>
           </div>
 
           <div class="field">
-            <%= address_form.label :country, "País" %>
-            <%= address_form.text_field :country, required: true %>
+            <%= address_form.label :street, "Rua" %>
+            <%= address_form.text_field :street, required: true, data: { "cep-lookup-target": "street" } %>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <%= address_form.label :number, "Número" %>
+              <%= address_form.number_field :number, required: true %>
+            </div>
+
+            <div class="field">
+              <%= address_form.label :complement, "Complemento" %>
+              <%= address_form.text_field :complement %>
+            </div>
+          </div>
+
+          <div class="field">
+            <%= address_form.label :neighborhood, "Bairro" %>
+            <%= address_form.text_field :neighborhood, required: true, data: { "cep-lookup-target": "neighborhood" } %>
+          </div>
+
+          <div class="field-row">
+            <div class="field">
+              <%= address_form.label :city, "Cidade" %>
+              <%= address_form.text_field :city, required: true, data: { "cep-lookup-target": "city" } %>
+            </div>
+
+            <div class="field">
+              <%= address_form.label :country, "País" %>
+              <%= address_form.text_field :country, required: true %>
+            </div>
           </div>
         </div>
       <% end %>

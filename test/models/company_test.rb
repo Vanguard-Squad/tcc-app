@@ -14,7 +14,7 @@ class CompanyTest < ActiveSupport::TestCase
 
   test "requires a unique cnpj" do
     _owner, existing_company = create_company_with_owner!
-    other_owner = User.create!(name: "Outro Dono", username: "dono_#{SecureRandom.hex(4)}", password: "senhasegura123", role: :owner)
+    other_owner = User.create!(name: "Outro Dono", email: "dono_#{SecureRandom.hex(4)}@example.com", password: "Senha@segura123", role: :owner)
 
     company = Company.new(name: "Duplicada", cnpj: existing_company.cnpj, owner: other_owner, address: create_college!.address)
     assert_not company.valid?
@@ -22,10 +22,10 @@ class CompanyTest < ActiveSupport::TestCase
   end
 
   test "builds and saves a nested address" do
-    owner = User.create!(name: "Dono", username: "dono_#{SecureRandom.hex(4)}", password: "senhasegura123", role: :owner)
+    owner = User.create!(name: "Dono", email: "dono_#{SecureRandom.hex(4)}@example.com", password: "Senha@segura123", role: :owner)
 
     company = Company.new(name: "Empresa Nova", cnpj: SecureRandom.hex(7), owner: owner)
-    company.build_address(street: "Rua Nova", number: 10, neighborhood: "Centro", country: "Brasil", zip_code: "00000-000")
+    company.build_address(street: "Rua Nova", number: 10, neighborhood: "Centro", city: "Cidade Teste", country: "Brasil", zip_code: "00000-000")
 
     assert company.save
     assert company.address.persisted?

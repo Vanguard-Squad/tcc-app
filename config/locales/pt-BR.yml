@@ -60,9 +60,11 @@ pt-BR:
       driver: "Motorista"
       vehicle: "Ônibus"
     attributes:
+      "user/student/college":
+        base: "Faculdade"
       user:
         name: "Nome"
-        username: "Usuário"
+        email: "E-mail"
         password: "Senha"
         password_confirmation: "Confirmação de senha"
         role: "Papel"
@@ -75,6 +77,7 @@ pt-BR:
         number: "Número"
         complement: "Complemento"
         neighborhood: "Bairro"
+        city: "Cidade"
         country: "País"
         zip_code: "CEP"
       college:

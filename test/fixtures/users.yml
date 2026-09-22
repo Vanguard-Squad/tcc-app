@@ -3,7 +3,7 @@
 one:
   name: User One
   role: owner
-  username: user_one
+  email: user_one@example.com
   password_digest: MyString
   is_active: false
   company: one
@@ -11,7 +11,7 @@ one:
 two:
   name: User Two
   role: manager
-  username: user_two
+  email: user_two@example.com
   password_digest: MyString
   is_active: false
   company: two

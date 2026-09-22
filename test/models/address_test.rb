@@ -5,10 +5,10 @@ class AddressTest < ActiveSupport::TestCase
     assert addresses(:one).valid?
   end
 
-  test "requires street, number, neighborhood, country and zip_code" do
+  test "requires street, number, neighborhood, city, country and zip_code" do
     address = Address.new
     assert_not address.valid?
-    %i[street number neighborhood country zip_code].each do |attribute|
+    %i[street number neighborhood city country zip_code].each do |attribute|
       assert_includes address.errors[attribute], "não pode ficar em branco"
     end
   end

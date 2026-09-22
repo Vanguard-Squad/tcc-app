@@ -5,7 +5,7 @@ class SessionsController < ApplicationController
   end
 
   def create
-    user = User.find_by(username: params[:username].to_s.strip.downcase)
+    user = User.find_by(email: params[:email].to_s.strip.downcase)
 
     if user&.authenticate(params[:password]) && user.is_active?
       start_new_session_for(user)

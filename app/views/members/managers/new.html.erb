@@ -12,13 +12,16 @@
     </div>
 
     <div class="field">
-      <%= form.label :username, "Usuário" %>
-      <%= form.text_field :username, required: true %>
+      <%= form.label :email, "E-mail" %>
+      <%= form.email_field :email, required: true %>
     </div>
 
     <div class="field">
       <%= form.label :password, "Senha" %>
-      <%= form.password_field :password, required: true, minlength: 8 %>
+      <%= form.password_field :password, required: true, minlength: 8,
+            pattern: "(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9\\s]).{8,}",
+            title: "Mínimo de 8 caracteres, com letra maiúscula, minúscula e caractere especial" %>
+      <p class="field-hint">Mínimo de 8 caracteres, com letra maiúscula, minúscula e caractere especial.</p>
     </div>
 
     <div class="field">

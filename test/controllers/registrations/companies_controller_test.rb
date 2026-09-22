@@ -8,7 +8,7 @@ module Registrations
     end
 
     test "creates the company and address, links it to the owner, and completes registration" do
-      owner = User.create!(name: "Dona", username: "dona_#{SecureRandom.hex(4)}", password: RegistrationTestHelpers::PASSWORD, role: :owner, is_active: true)
+      owner = User.create!(name: "Dona", email: "dona_#{SecureRandom.hex(4)}@example.com", password: RegistrationTestHelpers::PASSWORD, role: :owner, is_active: true)
       sign_in(owner)
 
       assert_difference [ "Company.count", "Address.count" ], 1 do
@@ -16,7 +16,7 @@ module Registrations
           company: {
             name: "Transportes Teste", cnpj: SecureRandom.hex(7),
             address_attributes: {
-              street: "Av Central", number: 100, neighborhood: "Centro",
+              street: "Av Central", number: 100, neighborhood: "Centro", city: "Cidade Teste",
               zip_code: "00000-000", country: "Brasil"
             }
           }

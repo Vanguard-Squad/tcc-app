@@ -10,8 +10,8 @@ module Members
       assert_difference [ "User.count", "Driver.count" ], 1 do
         post member_drivers_url, params: {
           user: {
-            name: "Motorista", username: "motorista_#{SecureRandom.hex(4)}",
-            password: "senhasegura123", password_confirmation: "senhasegura123",
+            name: "Motorista", email: "motorista_#{SecureRandom.hex(4)}@example.com",
+            password: "Senha@segura123", password_confirmation: "Senha@segura123",
             driver_attributes: { birthdate: "1990-01-01", drive_license: "CNH-#{SecureRandom.hex(5)}" }
           }
         }

@@ -1,0 +1,39 @@
+<% content_for :title, "Cadastrar rota" %>
+
+<main class="page page-narrow">
+  <h1>Cadastrar rota</h1>
+
+  <%= render "shared/form_errors", object: @route %>
+
+  <%= form_with model: @route, url: routes_path, local: true, class: "auth-form" do |form| %>
+    <div class="field">
+      <%= form.label :name, "Nome da rota" %>
+      <%= form.text_field :name, required: true, autofocus: true %>
+    </div>
+
+    <div data-controller="route-stops">
+      <h2>Paradas</h2>
+      <p class="field-hint">
+        As paradas são numeradas na ordem em que aparecem abaixo, do início ao fim da rota.
+      </p>
+
+      <div data-route-stops-target="list">
+        <%= form.fields_for :stops do |stop_form| %>
+          <%= render "stop_fields", form: stop_form, stop_addresses: @stop_addresses %>
+        <% end %>
+      </div>
+
+      <template data-route-stops-target="template">
+        <%= form.fields_for :stops, Stop.new, child_index: "__INDEX__" do |stop_form| %>
+          <%= render "stop_fields", form: stop_form, stop_addresses: @stop_addresses %>
+        <% end %>
+      </template>
+
+      <button type="button" data-action="route-stops#add" class="btn btn-secondary btn-inline">
+        Adicionar parada
+      </button>
+    </div>
+
+    <%= form.submit "Cadastrar rota", class: "btn btn-primary" %>
+  <% end %>
+</main>

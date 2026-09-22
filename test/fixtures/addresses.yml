@@ -5,13 +5,15 @@ one:
   complement: MyString
   number: 1
   neighborhood: MyString
+  city: MyString
   country: MyString
-  zip_code: MyString
+  zip_code: "11111-111"
 
 two:
   street: MyString
   complement: MyString
   number: 1
   neighborhood: MyString
+  city: MyString
   country: MyString
-  zip_code: MyString
+  zip_code: "22222-222"

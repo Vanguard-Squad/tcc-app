@@ -21,7 +21,7 @@ class RegistrationsController < ApplicationController
 
   private
     def account_params
-      params.require(:user).permit(:name, :username, :password, :password_confirmation)
+      params.require(:user).permit(:name, :email, :password, :password_confirmation)
     end
 
     def redirect_if_already_signed_in

@@ -7,6 +7,7 @@ class Student < ApplicationRecord
   has_many :checkins
 
   accepts_nested_attributes_for :address
+  accepts_nested_attributes_for :college, reject_if: :all_blank
 
   validates :cpf, presence: true, uniqueness: true
 end
