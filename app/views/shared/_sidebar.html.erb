@@ -6,8 +6,8 @@
 
     <% if current_user.owner? || current_user.manager? %>
       <%= link_to "Membros", members_path, class: "sidebar-link" %>
-      <%= link_to "Faculdades", colleges_path, class: "sidebar-link" %>
       <%= link_to "Frota", vehicles_path, class: "sidebar-link" %>
+      <%= link_to "Rotas", routes_path, class: "sidebar-link" %>
     <% end %>
   </div>
 

@@ -9,8 +9,8 @@ module Members
       assert_difference "User.count", 1 do
         post member_managers_url, params: {
           user: {
-            name: "Secretaria", username: "secretaria_#{SecureRandom.hex(4)}",
-            password: "senhasegura123", password_confirmation: "senhasegura123"
+            name: "Secretaria", email: "secretaria_#{SecureRandom.hex(4)}@example.com",
+            password: "Senha@segura123", password_confirmation: "Senha@segura123"
           }
         }
       end
@@ -29,8 +29,8 @@ module Members
       assert_no_difference "User.count" do
         post member_managers_url, params: {
           user: {
-            name: "Outra Secretaria", username: "outra_#{SecureRandom.hex(4)}",
-            password: "senhasegura123", password_confirmation: "senhasegura123"
+            name: "Outra Secretaria", email: "outra_#{SecureRandom.hex(4)}@example.com",
+            password: "Senha@segura123", password_confirmation: "Senha@segura123"
           }
         }
       end

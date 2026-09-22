@@ -23,7 +23,7 @@ module Members
     private
       def driver_params
         params.require(:user).permit(
-          :name, :username, :password, :password_confirmation,
+          :name, :email, :password, :password_confirmation,
           driver_attributes: %i[birthdate drive_license]
         )
       end

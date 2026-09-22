@@ -103,6 +103,12 @@ body {
   font-weight: 600;
 }
 
+.field-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.8rem;
+  color: var(--color-muted);
+}
+
 .field input {
   width: 100%;
   padding: 0.6rem 0.75rem;
@@ -167,6 +173,31 @@ body {
 .form-errors ul {
   margin: 0;
   padding-left: 1.1rem;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-primary);
+  font-size: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.nested-fieldset {
+  margin: 0.5rem 0 0;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.nested-fieldset legend {
+  padding: 0 0.35rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--color-muted);
 }
 
 .app-shell {
@@ -284,4 +315,24 @@ body {
 
 .data-table tbody tr:last-child td {
   border-bottom: none;
+}
+
+.stop-row {
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+}
+
+.stop-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.stop-row-title {
+  font-weight: 600;
+  font-size: 0.9rem;
 }

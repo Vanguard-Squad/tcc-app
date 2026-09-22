@@ -2,15 +2,16 @@
 # development, test). The code here should be idempotent so that it can be executed at any point in every environment.
 # The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
 
-SEED_PASSWORD = "senhasegura123"
+SEED_PASSWORD = "Senha@segura123"
 
 company_address = Address.find_or_create_by!(street: "Av. Paulista", number: 1000) do |address|
   address.neighborhood = "Bela Vista"
+  address.city = "São Paulo"
   address.country = "Brasil"
   address.zip_code = "01310-100"
 end
 
-owner = User.find_or_create_by!(username: "dona_empresa") do |user|
+owner = User.find_or_create_by!(email: "dona@transportes.com") do |user|
   user.name = "Maria Dona"
   user.password = SEED_PASSWORD
   user.role = :owner
@@ -25,7 +26,7 @@ end
 
 owner.update!(company: company) if owner.company_id != company.id
 
-manager = User.find_or_create_by!(username: "secretaria") do |user|
+manager = User.find_or_create_by!(email: "secretaria@transportes.com") do |user|
   user.name = "Secretaria da Empresa"
   user.password = SEED_PASSWORD
   user.role = :manager
@@ -35,16 +36,27 @@ end
 
 college_address = Address.find_or_create_by!(street: "Rua da Universidade", number: 500) do |address|
   address.neighborhood = "Cidade Universitária"
+  address.city = "Uberlândia"
   address.country = "Brasil"
-  address.zip_code = "05508-900"
+  address.zip_code = "38400-100"
 end
 
-college = College.find_or_create_by!(name: "Universidade Exemplo") do |c|
-  c.address = college_address
+college = College.find_or_create_by!(name: "UNITRI", address: college_address) do |c|
   c.is_active = true
 end
 
-driver_user = User.find_or_create_by!(username: "motorista") do |user|
+other_college_address = Address.find_or_create_by!(street: "Av. Getúlio Vargas", number: 100) do |address|
+  address.neighborhood = "Centro"
+  address.city = "Patos de Minas"
+  address.country = "Brasil"
+  address.zip_code = "38700-000"
+end
+
+College.find_or_create_by!(name: "UNITRI", address: other_college_address) do |c|
+  c.is_active = true
+end
+
+driver_user = User.find_or_create_by!(email: "motorista@transportes.com") do |user|
   user.name = "José Motorista"
   user.password = SEED_PASSWORD
   user.role = :driver
@@ -58,11 +70,12 @@ end
 
 student_address = Address.find_or_create_by!(street: "Rua dos Alunos", number: 45) do |address|
   address.neighborhood = "Centro"
+  address.city = "São Paulo"
   address.country = "Brasil"
   address.zip_code = "01000-000"
 end
 
-student_user = User.find_or_create_by!(username: "aluno") do |user|
+student_user = User.find_or_create_by!(email: "aluno@transportes.com") do |user|
   user.name = "Ana Aluna"
   user.password = SEED_PASSWORD
   user.role = :student
@@ -79,8 +92,8 @@ end
 
 puts <<~SEEDS
   Seeds criados. Login (senha "#{SEED_PASSWORD}" para todos):
-    dona_empresa  (owner)
-    secretaria    (manager)
-    motorista     (driver)
-    aluno         (student)
+    dona@transportes.com        (owner)
+    secretaria@transportes.com  (manager)
+    motorista@transportes.com   (driver)
+    aluno@transportes.com       (student)
 SEEDS

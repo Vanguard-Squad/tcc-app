@@ -8,7 +8,7 @@ class StudentTest < ActiveSupport::TestCase
   test "requires a unique cpf" do
     _owner, company = create_company_with_owner!
     student_user = create_student!(company: company)
-    another_user = User.create!(name: "Outro", username: "outro_#{SecureRandom.hex(4)}", password: "senhasegura123", role: :student, company: company)
+    another_user = User.create!(name: "Outro", email: "outro_#{SecureRandom.hex(4)}@example.com", password: "Senha@segura123", role: :student, company: company)
 
     duplicate = Student.new(
       user: another_user, address: student_user.student.address, college: student_user.student.college,
@@ -21,9 +21,9 @@ class StudentTest < ActiveSupport::TestCase
   test "builds and saves a nested address" do
     _owner, company = create_company_with_owner!
     college = create_college!
-    user = User.new(name: "Aluno", username: "aluno_#{SecureRandom.hex(4)}", password: "senhasegura123", role: :student, company: company)
+    user = User.new(name: "Aluno", email: "aluno_#{SecureRandom.hex(4)}@example.com", password: "Senha@segura123", role: :student, company: company)
     user.build_student(cpf: SecureRandom.hex(6), birthdate: 18.years.ago.to_date, gender: "F", college: college)
-    user.student.build_address(street: "Rua X", number: 1, neighborhood: "Bairro", country: "Brasil", zip_code: "00000-000")
+    user.student.build_address(street: "Rua X", number: 1, neighborhood: "Bairro", city: "Cidade Teste", country: "Brasil", zip_code: "00000-000")
 
     assert user.save
     assert user.student.address.persisted?
