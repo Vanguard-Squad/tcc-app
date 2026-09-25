@@ -1,0 +1,7 @@
+<% content_for :title, "Editar ônibus" %>
+
+<main class="page page-narrow">
+  <h1>Editar ônibus <%= @vehicle.license_plate_was %></h1>
+
+  <%= render "form", vehicle: @vehicle, routes: @routes, url: vehicle_path(@vehicle), submit_label: "Salvar" %>
+</main>

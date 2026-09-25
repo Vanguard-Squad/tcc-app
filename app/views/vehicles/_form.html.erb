@@ -1,0 +1,23 @@
+<%= render "shared/form_errors", object: vehicle %>
+
+<%= form_with model: vehicle, url: url, local: true, class: "auth-form" do |form| %>
+  <div class="field">
+    <%= form.label :license_plate, "Placa" %>
+    <%= form.text_field :license_plate, required: true, autofocus: true %>
+  </div>
+
+  <div class="field">
+    <%= form.label :seats, "Quantidade de assentos" %>
+    <%= form.number_field :seats, required: true, min: 1 %>
+  </div>
+
+  <div class="field">
+    <%= form.label :route_id, "Rota" %>
+    <%= form.collection_select :route_id, routes, :id, :name, { include_blank: "Sem rota" } %>
+    <% if routes.empty? %>
+      <p class="field-hint">Nenhuma rota cadastrada ainda. <%= link_to "Cadastrar rota", new_route_path %></p>
+    <% end %>
+  </div>
+
+  <%= form.submit submit_label, class: "btn btn-primary" %>
+<% end %>

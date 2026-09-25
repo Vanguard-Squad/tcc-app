@@ -4,9 +4,14 @@ import { Controller } from "@hotwired/stimulus"
 // os campos do bloco escondido para que não sejam enviados no submit.
 export default class extends Controller {
   static targets = ["existing", "new"]
+  static values = { mode: { type: String, default: "existing" } }
 
   connect() {
-    this.showExisting()
+    if (this.modeValue === "new") {
+      this.showNew()
+    } else {
+      this.showExisting()
+    }
   }
 
   showExisting() {

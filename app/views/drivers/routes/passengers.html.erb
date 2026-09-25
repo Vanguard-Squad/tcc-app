@@ -1,0 +1,41 @@
+<% content_for :title, "Meus passageiros" %>
+
+<main class="page">
+  <div class="page-header">
+    <h1>Meus passageiros</h1>
+    <%= link_to "Voltar para a rota", drivers_route_path, class: "btn btn-secondary btn-inline" %>
+  </div>
+
+  <% if @grouping.nil? %>
+    <p>Você ainda não tem uma rota atribuída.</p>
+  <% else %>
+    <% [ [ "Ida (embarque na parada, desembarque na faculdade)", @grouping.outbound ],
+         [ "Volta (embarque na faculdade, desembarque na parada)", @grouping.return_leg ] ].each do |title, leg| %>
+      <h2><%= title %></h2>
+
+      <% if leg[:grouped].empty? && leg[:unmatched].empty? %>
+        <p class="field-hint">Nenhum passageiro neste trecho.</p>
+      <% else %>
+        <% leg[:grouped].each do |stop, entries| %>
+          <div class="stop-row">
+            <div class="stop-row-header">
+              <span class="stop-row-title"><%= stop.step %>. <%= stop.address.label_with_city %></span>
+            </div>
+            <ul>
+              <% entries.each do |entry| %>
+                <li><%= entry.student.user.name %> — <%= entry.student.college.name %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <% if leg[:unmatched].any? %>
+          <p class="field-hint">
+            Sem parada definida (endereço não localizado):
+            <%= leg[:unmatched].map { |student| student.user.name }.join(", ") %>
+          </p>
+        <% end %>
+      <% end %>
+    <% end %>
+  <% end %>
+</main>

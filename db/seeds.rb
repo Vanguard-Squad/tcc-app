@@ -68,11 +68,11 @@ Driver.find_or_create_by!(user: driver_user) do |driver|
   driver.drive_license = "12345678900"
 end
 
-student_address = Address.find_or_create_by!(street: "Rua dos Alunos", number: 45) do |address|
-  address.neighborhood = "Centro"
+student_address = Address.find_or_create_by!(street: "Rua Augusta", number: 2690) do |address|
+  address.neighborhood = "Jardim Paulista"
   address.city = "São Paulo"
   address.country = "Brasil"
-  address.zip_code = "01000-000"
+  address.zip_code = "01412-100"
 end
 
 student_user = User.find_or_create_by!(email: "aluno@transportes.com") do |user|
@@ -89,6 +89,35 @@ Student.find_or_create_by!(user: student_user) do |student|
   student.college = college
   student.address = student_address
 end
+
+driver = driver_user.driver
+student = student_user.student
+
+vehicle = Vehicle.find_or_create_by!(license_plate: "ABC1D23") do |v|
+  v.company = company
+  v.seats = 20
+end
+
+route = Route.find_or_create_by!(name: "Rota Centro - UNITRI", company: company)
+
+second_stop_address = Address.find_or_create_by!(street: "Rua Oscar Freire", number: 379) do |address|
+  address.neighborhood = "Jardins"
+  address.city = "São Paulo"
+  address.country = "Brasil"
+  address.zip_code = "01426-001"
+end
+
+Stop.find_or_create_by!(route: route, address: student_address) { |stop| stop.step = 1 }
+Stop.find_or_create_by!(route: route, address: second_stop_address) { |stop| stop.step = 2 }
+
+vehicle.update!(route: route) if vehicle.route_id != route.id
+
+VehicleDriver.find_or_create_by!(driver: driver, vehicle: vehicle) do |vd|
+  vd.week_day = Driver::WEEK_DAYS[Date.current.wday]
+end
+
+VehicleStudent.find_or_create_by!(vehicle: vehicle, student: student, is_return: false)
+VehicleStudent.find_or_create_by!(vehicle: vehicle, student: student, is_return: true)
 
 puts <<~SEEDS
   Seeds criados. Login (senha "#{SEED_PASSWORD}" para todos):

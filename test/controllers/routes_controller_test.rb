@@ -90,4 +90,83 @@ class RoutesControllerTest < ActionDispatch::IntegrationTest
     get routes_url
     assert_redirected_to root_path
   end
+
+  test "new route form renders the address fields for a stop" do
+    owner, = create_company_with_owner!
+    sign_in(owner)
+
+    get new_route_url
+
+    assert_response :success
+    assert_select "fieldset input[name='route[stops_attributes][0][address_attributes][street]']"
+    assert_select "fieldset input[name='route[stops_attributes][0][address_attributes][zip_code]']"
+  end
+
+  test "owner edits a route: renames, swaps a stop address, removes a stop and adds a new one" do
+    owner, company = create_company_with_owner!
+    route = create_route!(company: company)
+    stop_a = create_stop!(route: route, step: 1)
+    stop_b = create_stop!(route: route, step: 2)
+    stop_c = create_stop!(route: route, step: 3)
+    other_address = create_stop!(route: create_route!(company: company)).address
+    sign_in(owner)
+
+    get edit_route_url(route)
+    assert_response :success
+    assert_select "input[name='route[stops_attributes][0][_destroy]']"
+
+    assert_difference "Stop.count", 0 do
+      patch route_url(route), params: {
+        route: {
+          name: "Rota Editada",
+          stops_attributes: {
+            "0" => { id: stop_a.id, address_id: other_address.id },
+            "1" => { id: stop_b.id, _destroy: "1", address_id: stop_b.address_id },
+            "2" => { id: stop_c.id, _destroy: "0", address_id: stop_c.address_id },
+            "3" => { address_attributes: {
+              street: "Rua Nova", number: 7, neighborhood: "Bairro", city: "Cidade Teste",
+              zip_code: "55555-000", country: "Brasil"
+            } }
+          }
+        }
+      }
+    end
+
+    assert_redirected_to routes_path
+    route.reload
+    assert_equal "Rota Editada", route.name
+    stops = route.stops.order(:step)
+    assert_equal [ 1, 2, 3 ], stops.pluck(:step)
+    assert_equal [ other_address, stop_c.address, Address.find_by(street: "Rua Nova") ], stops.map(&:address)
+    assert_not Stop.exists?(stop_b.id)
+  end
+
+  test "manager can edit a route" do
+    _owner, company = create_company_with_owner!
+    manager = create_manager!(company: company)
+    route = create_route!(company: company)
+    create_stop!(route: route)
+    sign_in(manager)
+
+    get edit_route_url(route)
+    assert_response :success
+  end
+
+  test "cannot edit another company's route, and drivers cannot edit routes" do
+    owner, company = create_company_with_owner!
+    _other_owner, other_company = create_company_with_owner!
+    foreign_route = create_route!(company: other_company)
+    own_route = create_route!(company: company)
+    driver = create_driver!(company: company)
+
+    sign_in(owner)
+    get edit_route_url(foreign_route)
+    assert_response :not_found
+    patch route_url(foreign_route), params: { route: { name: "Hack" } }
+    assert_response :not_found
+
+    sign_in(driver)
+    get edit_route_url(own_route)
+    assert_redirected_to root_path
+  end
 end

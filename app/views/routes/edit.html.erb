@@ -1,0 +1,7 @@
+<% content_for :title, "Editar rota" %>
+
+<main class="page page-narrow">
+  <h1>Editar rota <%= @route.name_was %></h1>
+
+  <%= render "form", route: @route, stop_addresses: @stop_addresses, url: route_path(@route), submit_label: "Salvar rota" %>
+</main>

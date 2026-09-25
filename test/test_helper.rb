@@ -2,6 +2,8 @@ ENV["RAILS_ENV"] ||= "test"
 require_relative "../config/environment"
 require "rails/test_help"
 
+Geocoder.configure(lookup: :test, ip_lookup: :test)
+
 module RegistrationTestHelpers
   PASSWORD = "Senha@segura123"
 
@@ -72,6 +74,14 @@ module RegistrationTestHelpers
       country: "Brasil", zip_code: "33333-#{SecureRandom.hex(3)}"
     )
     route.stops.create!(address: address, step: step)
+  end
+
+  def create_vehicle_driver!(driver:, vehicle:, week_day: nil)
+    VehicleDriver.create!(driver: driver, vehicle: vehicle, week_day: week_day)
+  end
+
+  def create_vehicle_student!(vehicle:, student:, is_return: false)
+    VehicleStudent.create!(vehicle: vehicle, student: student, is_return: is_return)
   end
 end
 

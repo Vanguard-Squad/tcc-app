@@ -1,0 +1,33 @@
+<% content_for :title, "Reordenar paradas" %>
+
+<main class="page page-narrow">
+  <h1>Reordenar paradas</h1>
+
+  <% if @route.nil? %>
+    <p>Você ainda não tem uma rota atribuída.</p>
+  <% else %>
+    <p class="field-hint">Arraste as paradas para mudar a ordem e clique em salvar.</p>
+
+    <%= form_with url: drivers_route_path, method: :patch, local: true, data: { controller: "stop-reorder" } do %>
+      <ul data-stop-reorder-target="list" style="list-style: none; padding: 0;">
+        <% @stops.each do |stop| %>
+          <li
+            class="stop-row"
+            data-stop-reorder-target="item"
+            data-id="<%= stop.id %>"
+            draggable="true"
+            data-action="dragstart->stop-reorder#dragStart dragover->stop-reorder#dragOver drop->stop-reorder#drop"
+          >
+            <div class="stop-row-header">
+              <span class="stop-row-title"><%= stop.step %>. <%= stop.address.label_with_city %></span>
+            </div>
+          </li>
+        <% end %>
+      </ul>
+
+      <div data-stop-reorder-target="hiddenFields"></div>
+
+      <%= submit_tag "Salvar nova ordem", class: "btn btn-primary" %>
+    <% end %>
+  <% end %>
+</main>

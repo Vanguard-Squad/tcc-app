@@ -59,6 +59,8 @@ pt-BR:
       student: "Aluno"
       driver: "Motorista"
       vehicle: "Ônibus"
+      route: "Rota"
+      stop: "Parada"
     attributes:
       "user/student/college":
         base: "Faculdade"
@@ -96,3 +98,9 @@ pt-BR:
         license_plate: "Placa"
         seats: "Quantidade de assentos"
         route: "Rota"
+      route:
+        name: "Nome"
+      stop:
+        step: "Ordem"
+        address: "Endereço"
+        await_return: "Aguarda retorno"

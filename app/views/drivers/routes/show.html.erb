@@ -1,0 +1,54 @@
+<% content_for :title, "Minha rota" %>
+
+<% content_for :head do %>
+  <%= stylesheet_link_tag "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
+        integrity: "sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=", crossorigin: "" %>
+<% end %>
+
+<main class="page">
+  <div class="page-header">
+    <h1>Minha rota<%= " — #{@route.name}" if @route %></h1>
+    <% if @route %>
+      <div class="page-header-actions">
+        <%= link_to "Reordenar paradas", edit_drivers_route_path, class: "btn btn-secondary btn-inline" %>
+        <%= link_to "Ver passageiros", passengers_drivers_route_path, class: "btn btn-primary btn-inline" %>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @route.nil? %>
+    <p>Você ainda não tem uma rota atribuída.</p>
+  <% else %>
+    <div
+      id="route-map"
+      data-controller="route-map"
+      data-route-map-stops-value="<%= @stops.map { |stop| { id: stop.id, step: stop.step, label: stop.address.label_with_city, lat: stop.address.latitude, lng: stop.address.longitude } }.to_json %>"
+      style="height: 400px; margin-bottom: 1.5rem; border-radius: 8px;"
+    ></div>
+
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Endereço</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @stops.each do |stop| %>
+          <tr>
+            <td><%= stop.step %></td>
+            <td>
+              <%= stop.address.label_with_city %>
+              <% unless stop.address.geocoded? %>
+                <span class="field-hint">(sem localização no mapa)</span>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+        <% if @stops.empty? %>
+          <tr><td colspan="2">Nenhuma parada cadastrada nesta rota.</td></tr>
+        <% end %>
+      </tbody>
+    </table>
+  <% end %>
+</main>

@@ -1,26 +1,32 @@
-<div class="stop-row" data-route-stops-target="stop">
+<% new_address = form.object.address&.new_record? ? form.object.address : Address.new %>
+<% start_with_new_address = stop_addresses.empty? || form.object.address&.new_record? %>
+<div class="stop-row" data-route-stops-target="stop" <%= "hidden" if form.object.marked_for_destruction? %>>
+  <% if form.object.persisted? %>
+    <%= form.hidden_field :_destroy, value: form.object.marked_for_destruction? ? "1" : "0", data: { "destroy-field": true } %>
+  <% end %>
+
   <div class="stop-row-header">
     <span class="stop-row-title">Parada</span>
     <button type="button" data-action="route-stops#remove" class="link-button">Remover</button>
   </div>
 
-  <div class="field" data-controller="toggle-fields">
+  <div class="field" data-controller="toggle-fields" data-toggle-fields-mode-value="<%= start_with_new_address ? "new" : "existing" %>">
     <%= form.label :address_id, "Endereço da parada" %>
 
     <div data-toggle-fields-target="existing">
       <%= form.select :address_id,
-            options_from_collection_for_select(stop_addresses, :id, :label_with_city),
+            options_from_collection_for_select(stop_addresses, :id, :label_with_city, form.object.address_id),
             { include_blank: "Selecione um endereço já usado" } %>
       <p class="field-hint">
         Não encontrou o endereço?
-        <button type="button" data-action="toggle-fields#showNew" class="link-button">Cadastrar nova parada</button>
+        <button type="button" data-action="toggle-fields#showNew" class="link-button">Cadastrar novo endereço</button>
       </p>
     </div>
 
     <fieldset data-toggle-fields-target="new" hidden class="nested-fieldset">
       <legend>Novo endereço</legend>
 
-      <%= form.fields_for :address do |address_form| %>
+      <%= form.fields_for :address, new_address do |address_form| %>
         <div data-controller="cep-lookup">
           <div class="field">
             <%= address_form.label :zip_code, "CEP" %>
