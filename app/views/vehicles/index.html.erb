@@ -13,6 +13,7 @@
         <th>Assentos</th>
         <th>Rota</th>
         <th>Situação</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -22,10 +23,11 @@
           <td><%= vehicle.seats_busy %> / <%= vehicle.seats %></td>
           <td><%= vehicle.route&.name || "Sem rota" %></td>
           <td><%= vehicle.is_active? ? "Ativo" : "Inativo" %></td>
+          <td><%= link_to "Editar / vincular rota", edit_vehicle_path(vehicle) %></td>
         </tr>
       <% end %>
       <% if @vehicles.empty? %>
-        <tr><td colspan="4">Nenhum ônibus cadastrado ainda.</td></tr>
+        <tr><td colspan="5">Nenhum ônibus cadastrado ainda.</td></tr>
       <% end %>
     </tbody>
   </table>

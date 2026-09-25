@@ -11,6 +11,7 @@
       <tr>
         <th>Nome</th>
         <th>Paradas</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -24,10 +25,11 @@
               Nenhuma parada cadastrada
             <% end %>
           </td>
+          <td><%= link_to "Editar", edit_route_path(route) %></td>
         </tr>
       <% end %>
       <% if @routes.empty? %>
-        <tr><td colspan="2">Nenhuma rota cadastrada ainda.</td></tr>
+        <tr><td colspan="3">Nenhuma rota cadastrada ainda.</td></tr>
       <% end %>
     </tbody>
   </table>

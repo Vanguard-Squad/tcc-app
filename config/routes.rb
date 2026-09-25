@@ -33,6 +33,12 @@ Rails.application.routes.draw do
   get  "/membros/alunos/novo", to: "members/students#new", as: :new_member_student
   post "/membros/alunos",      to: "members/students#create", as: :member_students
 
-  resources :vehicles, path: "frota", only: %i[index new create]
-  resources :routes, path: "rotas", only: %i[index new create]
+  resources :vehicles, path: "frota", only: %i[index new create edit update]
+  resources :routes, path: "rotas", only: %i[index new create edit update]
+
+  namespace :drivers, path: "motorista" do
+    resource :route, path: "rota", only: %i[show edit update] do
+      member { get :passengers, path: "passageiros" }
+    end
+  end
 end

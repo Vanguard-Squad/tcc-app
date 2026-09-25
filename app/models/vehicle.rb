@@ -9,4 +9,10 @@ class Vehicle < ApplicationRecord
 
   validates :license_plate, presence: true, uniqueness: true
   validates :seats, presence: true, numericality: { only_integer: true, greater_than: 0 }
+  validate :route_belongs_to_company
+
+  private
+    def route_belongs_to_company
+      errors.add(:route, "não pertence à sua empresa") if route && route.company_id != company_id
+    end
 end

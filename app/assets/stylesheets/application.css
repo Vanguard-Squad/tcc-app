@@ -336,3 +336,11 @@ body {
   font-weight: 600;
   font-size: 0.9rem;
 }
+
+.stop-row[draggable="true"] {
+  cursor: grab;
+}
+
+.stop-row[draggable="true"]:active {
+  cursor: grabbing;
+}

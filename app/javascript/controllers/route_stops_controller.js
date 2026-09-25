@@ -15,6 +15,15 @@ export default class extends Controller {
 
   remove(event) {
     event.preventDefault()
-    event.target.closest('[data-route-stops-target="stop"]').remove()
+    const row = event.target.closest('[data-route-stops-target="stop"]')
+    const destroyField = row.querySelector('[data-destroy-field]')
+
+    // Paradas já salvas precisam ser enviadas com _destroy=1 para serem excluídas.
+    if (destroyField) {
+      destroyField.value = "1"
+      row.hidden = true
+    } else {
+      row.remove()
+    }
   }
 }

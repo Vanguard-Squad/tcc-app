@@ -9,6 +9,11 @@
       <%= link_to "Frota", vehicles_path, class: "sidebar-link" %>
       <%= link_to "Rotas", routes_path, class: "sidebar-link" %>
     <% end %>
+
+    <% if current_user.driver? %>
+      <%= link_to "Minha rota", drivers_route_path, class: "sidebar-link" %>
+      <%= link_to "Meus passageiros", passengers_drivers_route_path, class: "sidebar-link" %>
+    <% end %>
   </div>
 
   <%= button_to "Sair", logout_path, method: :delete, class: "sidebar-link sidebar-link-button" %>
