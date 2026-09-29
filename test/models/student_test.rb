@@ -20,13 +20,34 @@ class StudentTest < ActiveSupport::TestCase
 
   test "builds and saves a nested address" do
     _owner, company = create_company_with_owner!
-    college = create_college!
+    college = create_college!(company: company)
     user = User.new(name: "Aluno", email: "aluno_#{SecureRandom.hex(4)}@example.com", password: "Senha@segura123", role: :student, company: company)
     user.build_student(cpf: SecureRandom.hex(6), birthdate: 18.years.ago.to_date, gender: "F", college: college)
     user.student.build_address(street: "Rua X", number: 1, neighborhood: "Bairro", city: "Cidade Teste", country: "Brasil", zip_code: "00000-000")
 
     assert user.save
     assert user.student.address.persisted?
+  end
+
+  test "rejects a college from another company" do
+    _owner, company = create_company_with_owner!
+    _other_owner, other_company = create_company_with_owner!
+    student = create_student!(company: company).student
+    student.college = create_college!(company: other_company)
+
+    assert_not student.valid?
+    assert_includes student.errors[:college], "não pertence à sua empresa"
+  end
+
+  test "a new address inherits the user's company and cannot belong to another one" do
+    _owner, company = create_company_with_owner!
+    _other_owner, other_company = create_company_with_owner!
+    student = create_student!(company: company).student
+    assert_equal company, student.address.company
+
+    student.address.update!(company: other_company)
+    assert_not student.valid?
+    assert_includes student.errors[:address], "não pertence à sua empresa"
   end
 
   test "nearest_stop_for returns nil when the student's address is not geocoded" do

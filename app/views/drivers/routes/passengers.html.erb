@@ -1,6 +1,6 @@
 <% content_for :title, "Meus passageiros" %>
 
-<main class="page">
+<main class="page" <% if @grouping %>data-controller="live-refresh" data-live-refresh-vehicle-id-value="<%= @vehicle.id %>"<% end %>>
   <div class="page-header">
     <h1>Meus passageiros</h1>
     <%= link_to "Voltar para a rota", drivers_route_path, class: "btn btn-secondary btn-inline" %>
@@ -9,9 +9,15 @@
   <% if @grouping.nil? %>
     <p>Você ainda não tem uma rota atribuída.</p>
   <% else %>
-    <% [ [ "Ida (embarque na parada, desembarque na faculdade)", @grouping.outbound ],
-         [ "Volta (embarque na faculdade, desembarque na parada)", @grouping.return_leg ] ].each do |title, leg| %>
+    <% [ [ "Ida (embarque na parada, desembarque na faculdade)", "outbound", @grouping.outbound ],
+         [ "Volta (embarque na faculdade, desembarque na parada)", "return", @grouping.return_leg ] ].each do |title, direction, leg| %>
+      <% trip_here = @active_trip&.direction == direction %>
       <h2><%= title %></h2>
+
+      <% if trip_here %>
+        <% boarded, total = @grouping.boarding_counts(direction) %>
+        <p class="trip-summary">Viagem em andamento: <strong><%= boarded %> de <%= total %></strong> já embarcaram.</p>
+      <% end %>
 
       <% if leg[:grouped].empty? && leg[:unmatched].empty? %>
         <p class="field-hint">Nenhum passageiro neste trecho.</p>
@@ -23,7 +29,10 @@
             </div>
             <ul>
               <% entries.each do |entry| %>
-                <li><%= entry.student.user.name %> — <%= entry.student.college.name %></li>
+                <li>
+                  <%= entry.student.user.name %> — <%= entry.student.college.name %>
+                  <%= render "passenger_status", checkin: @grouping.checkin_for(entry.student), direction: direction, trip_here: trip_here %>
+                </li>
               <% end %>
             </ul>
           </div>
@@ -32,8 +41,15 @@
         <% if leg[:unmatched].any? %>
           <p class="field-hint">
             Sem parada definida (endereço não localizado):
-            <%= leg[:unmatched].map { |student| student.user.name }.join(", ") %>
           </p>
+          <ul>
+            <% leg[:unmatched].each do |student| %>
+              <li>
+                <%= student.user.name %>
+                <%= render "passenger_status", checkin: @grouping.checkin_for(student), direction: direction, trip_here: trip_here %>
+              </li>
+            <% end %>
+          </ul>
         <% end %>
       <% end %>
     <% end %>

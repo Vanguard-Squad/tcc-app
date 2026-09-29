@@ -38,18 +38,18 @@ module RegistrationTestHelpers
     user
   end
 
-  def create_college!(name: "Faculdade #{SecureRandom.hex(3)}", city: "Cidade Universitária", zip_code: "11111-#{SecureRandom.hex(3)}")
+  def create_college!(company:, name: "Faculdade #{SecureRandom.hex(3)}", city: "Cidade Universitária", zip_code: "11111-#{SecureRandom.hex(3)}")
     address = Address.create!(
       street: "Rua Faculdade", number: 1, neighborhood: "Bairro Universitário", city: city,
-      country: "Brasil", zip_code: zip_code
+      country: "Brasil", zip_code: zip_code, company: company
     )
     College.create!(name: name, address: address, is_active: true)
   end
 
-  def create_student!(company:, college: create_college!)
+  def create_student!(company:, college: create_college!(company: company))
     address = Address.create!(
       street: "Rua Aluno", number: 1, neighborhood: "Bairro", city: "Cidade Teste",
-      country: "Brasil", zip_code: "22222-000"
+      country: "Brasil", zip_code: "22222-000", company: company
     )
     user = User.new(
       name: "Student #{SecureRandom.hex(2)}", email: "student_#{SecureRandom.hex(4)}@example.com",
@@ -71,13 +71,18 @@ module RegistrationTestHelpers
   def create_stop!(route:, step: 1)
     address = Address.create!(
       street: "Rua Parada", number: 1, neighborhood: "Bairro", city: "Cidade Teste",
-      country: "Brasil", zip_code: "33333-#{SecureRandom.hex(3)}"
+      country: "Brasil", zip_code: "33333-#{SecureRandom.hex(3)}", company: route.company
     )
     route.stops.create!(address: address, step: step)
   end
 
   def create_vehicle_driver!(driver:, vehicle:, week_day: nil)
     VehicleDriver.create!(driver: driver, vehicle: vehicle, week_day: week_day)
+  end
+
+  def create_trip!(vehicle:, driver:, direction: :outbound)
+    VehicleDriver.find_or_create_by!(vehicle: vehicle, driver: driver)
+    Trip.create!(vehicle: vehicle, driver: driver, direction: direction, status: :active, started_at: Time.current)
   end
 
   def create_vehicle_student!(vehicle:, student:, is_return: false)

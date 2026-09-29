@@ -10,6 +10,7 @@ module Drivers
 
     def passengers
       @grouping = RoutePassengerGrouping.new(route: @route, vehicle: @vehicle) if @route
+      @active_trip = current_user.driver.active_trip
     end
 
     def edit

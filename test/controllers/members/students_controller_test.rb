@@ -4,7 +4,7 @@ module Members
   class StudentsControllerTest < ActionDispatch::IntegrationTest
     test "owner creates a student with a nested address, inheriting the owner's company" do
       owner, company = create_company_with_owner!
-      college = create_college!
+      college = create_college!(company: company)
       sign_in(owner)
 
       assert_difference [ "User.count", "Student.count", "Address.count" ], 1 do
@@ -58,6 +58,7 @@ module Members
       end
 
       college = College.last
+      assert_equal owner.company, college.company
       assert_equal "UNITRI", college.name
       assert_equal "Patos de Minas", college.address.city
       assert_equal college, User.last.student.college
@@ -66,11 +67,48 @@ module Members
     test "manager can also create a student" do
       _owner, company = create_company_with_owner!
       manager = create_manager!(company: company)
-      create_college!
+      create_college!(company: company)
       sign_in(manager)
 
       get new_member_student_url
       assert_response :success
+    end
+
+    test "the college list only shows colleges from the user's company" do
+      owner, company = create_company_with_owner!
+      _other_owner, other_company = create_company_with_owner!
+      own = create_college!(company: company, name: "Faculdade Própria")
+      foreign = create_college!(company: other_company, name: "Faculdade Alheia")
+      sign_in(owner)
+
+      get new_member_student_url
+
+      assert_select "option[value='#{own.id}']"
+      assert_select "option[value='#{foreign.id}']", count: 0
+    end
+
+    test "cannot register a student with a college from another company" do
+      owner, = create_company_with_owner!
+      _other_owner, other_company = create_company_with_owner!
+      foreign = create_college!(company: other_company)
+      sign_in(owner)
+
+      assert_no_difference [ "User.count", "Student.count" ] do
+        post member_students_url, params: {
+          user: {
+            name: "Aluno", email: "aluno_#{SecureRandom.hex(4)}@example.com",
+            password: "Senha@segura123", password_confirmation: "Senha@segura123",
+            student_attributes: {
+              cpf: SecureRandom.hex(6), birthdate: "2005-05-05", gender: "F", college_id: foreign.id,
+              address_attributes: {
+                street: "Rua do Aluno", number: 20, neighborhood: "Bairro", city: "Cidade Teste",
+                zip_code: "22222-000", country: "Brasil"
+              }
+            }
+          }
+        }
+      end
+      assert_response :unprocessable_entity
     end
   end
 end

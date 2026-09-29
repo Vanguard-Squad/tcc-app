@@ -10,12 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_22_140311) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_25_190000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "addresses", force: :cascade do |t|
     t.string "city"
+    t.bigint "company_id"
     t.string "complement"
     t.string "country"
     t.datetime "created_at", null: false
@@ -26,6 +27,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_140311) do
     t.string "street"
     t.datetime "updated_at", null: false
     t.string "zip_code"
+    t.index ["company_id"], name: "index_addresses_on_company_id"
   end
 
   create_table "archives", force: :cascade do |t|
@@ -128,6 +130,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_140311) do
     t.index ["user_id"], name: "index_students_on_user_id"
   end
 
+  create_table "trips", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "direction", null: false
+    t.bigint "driver_id", null: false
+    t.datetime "finished_at"
+    t.float "latitude"
+    t.float "longitude"
+    t.datetime "position_at"
+    t.datetime "started_at", null: false
+    t.string "status", default: "active", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "vehicle_id", null: false
+    t.index ["driver_id"], name: "index_trips_on_driver_id"
+    t.index ["vehicle_id"], name: "index_trips_on_active_vehicle", unique: true, where: "((status)::text = 'active'::text)"
+    t.index ["vehicle_id"], name: "index_trips_on_vehicle_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.bigint "company_id"
     t.datetime "created_at", null: false
@@ -175,6 +194,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_140311) do
     t.index ["route_id"], name: "index_vehicles_on_route_id"
   end
 
+  add_foreign_key "addresses", "companies"
   add_foreign_key "archives", "users"
   add_foreign_key "checkins", "students"
   add_foreign_key "checkins", "vehicles"
@@ -189,6 +209,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_22_140311) do
   add_foreign_key "students", "addresses"
   add_foreign_key "students", "colleges"
   add_foreign_key "students", "users"
+  add_foreign_key "trips", "drivers"
+  add_foreign_key "trips", "vehicles"
   add_foreign_key "vehicle_drivers", "drivers"
   add_foreign_key "vehicle_drivers", "vehicles"
   add_foreign_key "vehicle_students", "students"

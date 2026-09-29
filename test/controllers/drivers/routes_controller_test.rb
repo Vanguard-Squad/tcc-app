@@ -8,8 +8,8 @@ module Drivers
       vehicle = create_vehicle!(company: company)
       route = create_route!(company: company)
 
-      address_a = Address.create!(street: "Rua Alfa", number: 1, neighborhood: "Bairro", city: "Cidade Teste", country: "Brasil", zip_code: "10000-000")
-      address_b = Address.create!(street: "Rua Beta", number: 2, neighborhood: "Bairro", city: "Cidade Teste", country: "Brasil", zip_code: "20000-000")
+      address_a = Address.create!(street: "Rua Alfa", number: 1, neighborhood: "Bairro", city: "Cidade Teste", country: "Brasil", zip_code: "10000-000", company: company)
+      address_b = Address.create!(street: "Rua Beta", number: 2, neighborhood: "Bairro", city: "Cidade Teste", country: "Brasil", zip_code: "20000-000", company: company)
       stop_b = route.stops.create!(address: address_b, step: 2)
       stop_a = route.stops.create!(address: address_a, step: 1)
       vehicle.update!(route: route)
@@ -141,6 +141,53 @@ module Drivers
       assert_includes outbound_section, student_user.name
       assert_includes outbound_section, near_stop.address.label_with_city
       assert_not_includes return_section, student_user.name
+    end
+
+    test "during a trip the driver sees who boarded and who is still waiting" do
+      _owner, company = create_company_with_owner!
+      driver_user = create_driver!(company: company)
+      vehicle = create_vehicle!(company: company)
+      route = create_route!(company: company)
+      stop = create_stop!(route: route, step: 1)
+      stop.address.update!(latitude: -23.5, longitude: -46.6)
+      vehicle.update!(route: route)
+      create_vehicle_driver!(driver: driver_user.driver, vehicle: vehicle)
+      create_trip!(vehicle: vehicle, driver: driver_user.driver, direction: :outbound)
+
+      boarded = create_student!(company: company)
+      waiting = create_student!(company: company)
+      [ boarded, waiting ].each do |user|
+        user.student.address.update!(latitude: -23.5, longitude: -46.6)
+        create_vehicle_student!(vehicle: vehicle, student: user.student)
+      end
+      Checkin.today_for!(student: boarded.student, vehicle: vehicle).advance!("boarded_initial", :outbound)
+
+      sign_in(driver_user)
+      get passengers_drivers_route_url
+
+      assert_response :success
+      assert_match "1 de 2", response.body
+      assert_match(/#{boarded.name}.*?Embarcou às/m, response.body)
+      assert_match(/#{waiting.name}.*?Aguardando embarque/m, response.body)
+    end
+
+    test "without a trip, passengers show no registry for the day" do
+      _owner, company = create_company_with_owner!
+      driver_user = create_driver!(company: company)
+      vehicle = create_vehicle!(company: company)
+      route = create_route!(company: company)
+      create_stop!(route: route, step: 1)
+      vehicle.update!(route: route)
+      create_vehicle_driver!(driver: driver_user.driver, vehicle: vehicle)
+      student = create_student!(company: company)
+      create_vehicle_student!(vehicle: vehicle, student: student.student)
+
+      sign_in(driver_user)
+      get passengers_drivers_route_url
+
+      assert_response :success
+      assert_match "Sem registro hoje", response.body
+      assert_no_match "já embarcaram", response.body
     end
   end
 end

@@ -4,8 +4,13 @@ class Driver < ApplicationRecord
   belongs_to :user
   has_many :vehicle_drivers
   has_many :vehicles, through: :vehicle_drivers
+  has_many :trips
 
   validates :drive_license, presence: true, uniqueness: true
+
+  def active_trip
+    trips.active.first
+  end
 
   # Veículo do dia (por vehicle_drivers.week_day), ou o primeiro vínculo caso
   # não haja um específico para hoje. nil quando o motorista não tem veículo.

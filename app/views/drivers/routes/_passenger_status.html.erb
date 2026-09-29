@@ -1,0 +1,8 @@
+<% state, time = checkin ? checkin.leg_status(direction) : [ :waiting, nil ] %>
+<% if state == :waiting && !trip_here %>
+  <span class="status-badge status-none">Sem registro hoje</span>
+<% else %>
+  <span class="status-badge status-<%= state %>">
+    <%= Checkin::LEG_LABELS.fetch(direction).fetch(state) %><%= " às #{l(time, format: '%H:%M')}" if time %>
+  </span>
+<% end %>
