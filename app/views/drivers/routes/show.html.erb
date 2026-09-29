@@ -19,6 +19,36 @@
   <% if @route.nil? %>
     <p>Você ainda não tem uma rota atribuída.</p>
   <% else %>
+    <% active_trip = current_user.driver.active_trip %>
+    <div class="stop-row">
+      <div class="stop-row-header">
+        <span class="stop-row-title">Viagem</span>
+      </div>
+
+      <% if active_trip %>
+        <p>Viagem de <strong><%= active_trip.outbound? ? "ida" : "volta" %></strong> em andamento.</p>
+
+        <div data-controller="trip-tracker"
+             data-trip-tracker-url-value="<%= drivers_trip_position_path %>"
+             data-trip-tracker-stops-value="<%= @stops.map { |stop| { lat: stop.address.latitude, lng: stop.address.longitude } }.to_json %>">
+          <div class="page-header-actions">
+            <button type="button" class="btn btn-primary btn-inline" data-action="trip-tracker#startGps">Enviar localização (GPS)</button>
+            <button type="button" class="btn btn-secondary btn-inline" data-action="trip-tracker#startSimulation">Simular trajeto</button>
+            <button type="button" class="btn btn-secondary btn-inline" data-action="trip-tracker#stopSending">Parar envio</button>
+          </div>
+          <p class="field-hint" data-trip-tracker-target="status">Escolha como enviar a posição do ônibus.</p>
+        </div>
+
+        <%= button_to "Finalizar viagem", drivers_trip_path, method: :delete, class: "btn btn-secondary" %>
+      <% else %>
+        <p class="field-hint">Nenhuma viagem em andamento. Ao iniciar, os alunos passam a ver o ônibus no mapa.</p>
+        <div class="page-header-actions">
+          <%= button_to "Iniciar viagem de ida", drivers_trip_path, params: { direction: "outbound" }, class: "btn btn-primary" %>
+          <%= button_to "Iniciar viagem de volta", drivers_trip_path, params: { direction: "return" }, class: "btn btn-secondary" %>
+        </div>
+      <% end %>
+    </div>
+
     <div
       id="route-map"
       data-controller="route-map"

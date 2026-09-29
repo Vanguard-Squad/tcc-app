@@ -2,7 +2,11 @@ class Address < ApplicationRecord
   geocoded_by :geocodable_address
   after_validation :geocode, if: :should_geocode?
 
-  has_one :company
+  # Empresa a que o endereço pertence (faculdade, parada, aluno...). Fica
+  # vazio apenas por um instante no cadastro da própria empresa, que
+  # preenche o campo logo após ser criada.
+  belongs_to :company, optional: true
+  has_one :headquartered_company, class_name: "Company", foreign_key: "address_id", inverse_of: :address
   has_one :college
   has_one :student
   has_many :stops

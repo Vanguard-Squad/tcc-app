@@ -68,9 +68,6 @@ class RoutesController < ApplicationController
     # Paradas não têm tela própria de cadastro: reaproveita endereços já
     # usados como parada em outras rotas desta company, ou permite criar um novo.
     def load_stop_address_options
-      @stop_addresses = Address.joins(stops: :route)
-                                .where(routes: { company_id: current_company.id })
-                                .distinct
-                                .order(:street)
+      @stop_addresses = current_company.addresses.joins(:stops).distinct.order(:street)
     end
 end

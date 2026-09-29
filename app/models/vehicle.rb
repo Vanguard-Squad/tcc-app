@@ -6,6 +6,7 @@ class Vehicle < ApplicationRecord
   has_many :vehicle_students
   has_many :students, through: :vehicle_students
   has_many :checkins
+  has_many :trips
 
   validates :license_plate, presence: true, uniqueness: true
   validates :seats, presence: true, numericality: { only_integer: true, greater_than: 0 }

@@ -169,4 +169,48 @@ class RoutesControllerTest < ActionDispatch::IntegrationTest
     get edit_route_url(own_route)
     assert_redirected_to root_path
   end
+
+  test "a new stop address is stored under the route's company" do
+    owner, company = create_company_with_owner!
+    sign_in(owner)
+
+    post routes_url, params: {
+      route: {
+        name: "Rota Empresa",
+        stops_attributes: {
+          "0" => { address_attributes: {
+            street: "Rua da Empresa", number: 1, neighborhood: "Bairro", city: "Cidade Teste",
+            zip_code: "44444-001", country: "Brasil"
+          } }
+        }
+      }
+    }
+
+    assert_equal company, Address.find_by(street: "Rua da Empresa").company
+  end
+
+  test "cannot use a stop address from another company" do
+    owner, = create_company_with_owner!
+    _other_owner, other_company = create_company_with_owner!
+    foreign_address = create_stop!(route: create_route!(company: other_company)).address
+    sign_in(owner)
+
+    assert_no_difference [ "Route.count", "Stop.count" ] do
+      post routes_url, params: { route: { name: "Rota Invasora", stops_attributes: { "0" => { address_id: foreign_address.id } } } }
+    end
+    assert_response :unprocessable_entity
+  end
+
+  test "the stop address list only offers addresses from the user's company" do
+    owner, company = create_company_with_owner!
+    _other_owner, other_company = create_company_with_owner!
+    own = create_stop!(route: create_route!(company: company)).address
+    foreign = create_stop!(route: create_route!(company: other_company)).address
+    sign_in(owner)
+
+    get new_route_url
+
+    assert_select "option[value='#{own.id}']"
+    assert_select "option[value='#{foreign.id}']", count: 0
+  end
 end

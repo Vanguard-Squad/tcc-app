@@ -344,3 +344,21 @@ body {
 .stop-row[draggable="true"]:active {
   cursor: grabbing;
 }
+
+.trip-summary {
+  margin: 0 0 0.75rem;
+}
+
+.status-badge {
+  display: inline-block;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.status-waiting { background: #fef3c7; color: #92400e; }
+.status-boarded { background: #dbeafe; color: #1e40af; }
+.status-done { background: #dcfce7; color: #166534; }
+.status-none { background: #f3f4f6; color: #6b7280; font-weight: 400; }

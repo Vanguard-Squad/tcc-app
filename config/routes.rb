@@ -40,5 +40,12 @@ Rails.application.routes.draw do
     resource :route, path: "rota", only: %i[show edit update] do
       member { get :passengers, path: "passageiros" }
     end
+    resource :trip, path: "viagem", only: %i[create destroy]
+    resource :trip_position, path: "viagem/posicao", only: :create
+  end
+
+  namespace :students, path: "aluno" do
+    resource :trip, path: "", only: :show
+    resources :checkins, only: :create
   end
 end

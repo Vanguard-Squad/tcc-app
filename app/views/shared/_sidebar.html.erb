@@ -10,6 +10,10 @@
       <%= link_to "Rotas", routes_path, class: "sidebar-link" %>
     <% end %>
 
+    <% if current_user.student? %>
+      <%= link_to "Meu ônibus", students_trip_path, class: "sidebar-link" %>
+    <% end %>
+
     <% if current_user.driver? %>
       <%= link_to "Minha rota", drivers_route_path, class: "sidebar-link" %>
       <%= link_to "Meus passageiros", passengers_drivers_route_path, class: "sidebar-link" %>

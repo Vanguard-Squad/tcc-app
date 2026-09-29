@@ -14,6 +14,7 @@ module Members
       @user.role = :student
       @user.is_active = true
       @user.company = current_company
+      assign_company_to_new_college
 
       if @user.save
         redirect_to members_path, notice: "Aluno cadastrado com sucesso."
@@ -40,7 +41,12 @@ module Members
       end
 
       def load_colleges
-        @colleges = College.includes(:address).order(:name).map { |college| [ college.label_with_city, college.id ] }
+        @colleges = current_company.colleges.includes(:address).order(:name).map { |college| [ college.label_with_city, college.id ] }
+      end
+
+      def assign_company_to_new_college
+        college = @user.student&.college
+        college.address.company = current_company if college&.new_record? && college.address
       end
 
       def prepare_new_college_fields

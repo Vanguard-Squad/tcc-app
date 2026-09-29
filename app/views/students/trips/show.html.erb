@@ -1,0 +1,90 @@
+<% content_for :title, "Meu ônibus" %>
+
+<% content_for :head do %>
+  <%= stylesheet_link_tag "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
+        integrity: "sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=", crossorigin: "" %>
+<% end %>
+
+<main class="page">
+  <div class="page-header">
+    <h1>Meu ônibus<%= " — #{@route.name}" if @route %></h1>
+  </div>
+
+  <% if @route.nil? %>
+    <p>Você ainda não está vinculado a um ônibus com rota.</p>
+  <% else %>
+    <%
+      place = ->(address) { address&.geocoded? ? { lat: address.latitude, lng: address.longitude } : {} }
+      home = place.call(@student.address)
+      stop_place = place.call(@stop&.address)
+      college = place.call(@student.college.address)
+      bus = @trip&.latitude ? { lat: @trip.latitude, lng: @trip.longitude } : {}
+      walk = @trip&.outbound? && @next_step == "boarded_initial" && home.any? && stop_place.any?
+    %>
+
+    <div data-controller="bus-tracker"
+         data-bus-tracker-vehicle-id-value="<%= @vehicle.id %>"
+         data-bus-tracker-trip-active-value="<%= @trip.present? %>"
+         data-bus-tracker-home-value="<%= home.to_json %>"
+         data-bus-tracker-stop-value="<%= stop_place.to_json %>"
+         data-bus-tracker-college-value="<%= college.to_json %>"
+         data-bus-tracker-target-value="<%= (@target || {}).to_json %>"
+         data-bus-tracker-bus-value="<%= bus.to_json %>"
+         data-bus-tracker-walk-value="<%= walk %>">
+
+      <p class="field-hint">Ônibus <%= @vehicle.license_plate %></p>
+
+      <div class="stop-row">
+        <div class="stop-row-header">
+          <span class="stop-row-title">Meu ponto de embarque</span>
+        </div>
+        <% if @stop %>
+          <p><%= @stop.address.label_with_city %> (parada <%= @stop.step %>)</p>
+        <% else %>
+          <p class="field-hint">Não foi possível localizar seu ponto: seu endereço ou os da rota ainda não têm localização no mapa.</p>
+        <% end %>
+        <p class="field-hint">Faculdade: <%= @student.college.name %></p>
+        <p class="field-hint" data-bus-tracker-target="status"></p>
+      </div>
+
+      <div class="stop-row">
+        <div class="stop-row-header">
+          <span class="stop-row-title">Viagem</span>
+        </div>
+
+        <% if @trip %>
+          <p>Viagem de <strong><%= @trip.outbound? ? "ida" : "volta" %></strong> em andamento.</p>
+
+          <% if @target %>
+            <p>
+              <%= @target[:kind] == :stop ? "O ônibus chega ao seu ponto em" : "O ônibus chega à faculdade em" %>
+              <strong data-bus-tracker-target="eta">aguardando localização do ônibus…</strong>
+            </p>
+          <% end %>
+
+          <% if @next_step %>
+            <%= button_to Checkin::STEP_LABELS.fetch(@next_step), students_checkins_path, params: { step: @next_step }, class: "btn btn-primary" %>
+          <% else %>
+            <p class="field-hint">Todas as etapas desta viagem foram registradas.</p>
+          <% end %>
+        <% else %>
+          <p class="field-hint">Nenhuma viagem em andamento. Esta tela atualiza sozinha quando o motorista iniciar.</p>
+        <% end %>
+      </div>
+
+      <div class="stop-row">
+        <div class="stop-row-header">
+          <span class="stop-row-title">Registros de hoje</span>
+        </div>
+        <ul>
+          <% Checkin::STEPS.each do |step| %>
+            <% time = @checkin&.public_send(step) %>
+            <li><%= Checkin::STEP_LABELS.fetch(step) %>: <%= time ? l(time, format: "%H:%M") : "—" %></li>
+          <% end %>
+        </ul>
+      </div>
+
+      <div data-bus-tracker-target="map" id="student-map" style="height: 420px; border-radius: 8px;"></div>
+    </div>
+  <% end %>
+</main>

@@ -8,6 +8,7 @@ one:
   city: MyString
   country: MyString
   zip_code: "11111-111"
+  company: one
 
 two:
   street: MyString
@@ -17,3 +18,4 @@ two:
   city: MyString
   country: MyString
   zip_code: "22222-222"
+  company: two
