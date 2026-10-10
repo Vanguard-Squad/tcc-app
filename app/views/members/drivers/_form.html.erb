@@ -1,0 +1,20 @@
+<%= render "shared/form_errors", object: user %>
+
+<%= form_with model: user, url: url, method: user.persisted? ? :patch : :post, local: true, class: "auth-form" do |form| %>
+  <%= render "members/account_fields", form: form %>
+
+  <%= form.fields_for :driver do |driver_form| %>
+    <h3 class="form-section">Dados do motorista</h3>
+    <div class="field">
+      <%= driver_form.label :birthdate, "Data de nascimento" %>
+      <%= driver_form.date_field :birthdate, required: true %>
+    </div>
+
+    <div class="field">
+      <%= driver_form.label :drive_license, "CNH" %>
+      <%= driver_form.text_field :drive_license, required: true %>
+    </div>
+  <% end %>
+
+  <%= form.submit submit_label, class: "btn btn-primary" %>
+<% end %>

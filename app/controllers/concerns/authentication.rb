@@ -24,8 +24,9 @@ module Authentication
       Current.user ||= authenticated_user_from_session
     end
 
+    # Usuário desativado perde a sessão na próxima requisição.
     def authenticated_user_from_session
-      User.find_by(id: session[:user_id])
+      User.find_by(id: session[:user_id], is_active: true)
     end
 
     def user_signed_in?
@@ -33,7 +34,10 @@ module Authentication
     end
 
     def require_authentication
-      redirect_to login_path, alert: "Faça login para continuar." unless current_user
+      return if current_user
+
+      session[:return_to] = request.fullpath if request.get?
+      redirect_to login_path, alert: "Faça login para continuar."
     end
 
     def require_completed_registration
@@ -44,7 +48,9 @@ module Authentication
     end
 
     def start_new_session_for(user)
+      return_to = session[:return_to]
       reset_session
+      session[:return_to] = return_to if return_to
       session[:user_id] = user.id
       Current.user = user
     end

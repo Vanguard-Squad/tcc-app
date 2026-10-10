@@ -14,7 +14,8 @@ async function fetchRoute(baseUrl, points) {
     return {
       path: route.geometry.coordinates.map(([ lng, lat ]) => [ lat, lng ]),
       duration: route.duration,
-      distance: route.distance
+      distance: route.distance,
+      legs: (route.legs || []).map(({ duration, distance }) => ({ duration, distance }))
     }
   } catch {
     return null

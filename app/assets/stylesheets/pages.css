@@ -1,0 +1,850 @@
+/* ---------- Dashboard ---------- */
+
+.page-medium {
+  max-width: 760px;
+}
+
+.stat-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 2rem;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  list-style: none;
+  color: var(--ink-soft);
+}
+
+.stat-strip li {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.stat-strip strong {
+  color: var(--ink);
+  font-size: 1.35rem;
+  font-weight: 700;
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.dash-grid-even {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.dash-side > .panel:last-child,
+.dash-grid > .panel {
+  margin-bottom: 0;
+}
+
+@media (max-width: 960px) {
+  .dash-grid,
+  .dash-grid-even {
+    grid-template-columns: 1fr;
+  }
+}
+
+.panel-link {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.fleet-map {
+  height: 340px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.live-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.live-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.25rem;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.live-row:last-child {
+  border-bottom: 0;
+}
+
+.live-row-main strong {
+  display: block;
+}
+
+.live-row-count {
+  text-align: right;
+}
+
+.live-row-count .numeric {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.live-row-seen {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .live-row {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+  }
+
+  .live-row-seen {
+    grid-column: 2 / -1;
+  }
+}
+
+.empty-icon {
+  display: block;
+  margin: 0 auto 0.75rem;
+  color: var(--ink-faint);
+}
+
+.alert-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.alert-list li + li {
+  border-top: 1px solid var(--rule-soft);
+}
+
+.alert-list a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.alert-list a:hover span:last-child {
+  text-decoration: underline;
+}
+
+.alert-count {
+  display: grid;
+  flex: none;
+  place-items: center;
+  min-width: 2rem;
+  height: 2rem;
+  padding: 0 0.4rem;
+  border-radius: var(--radius-sm);
+  background: var(--signal-soft);
+  color: var(--signal-ink);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.all-clear {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  color: var(--go);
+  font-weight: 700;
+}
+
+.activity-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.activity-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0;
+}
+
+.activity-list li > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.activity-list strong {
+  display: block;
+  font-size: 0.95rem;
+}
+
+.activity-list time {
+  color: var(--ink-soft);
+  font-weight: 600;
+}
+
+/* ---------- Herói da viagem (motorista e aluno) ---------- */
+
+/* O bloco principal da tela: a faixa amarela na lateral marca viagem ao vivo. */
+.trip-hero {
+  margin-bottom: 1.25rem;
+  padding: 1.5rem;
+  border: 1px solid var(--rule);
+  border-left: 6px solid var(--line-blue);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.trip-hero.is-live {
+  border-left-color: var(--signal);
+}
+
+.trip-hero-kicker {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.25rem;
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+
+.trip-hero-title {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+}
+
+.trip-hero-vehicle {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.trip-hero-vehicle .plate {
+  font-size: 1.15rem;
+}
+
+.trip-hero-vehicle strong {
+  display: block;
+  font-family: var(--font-sign);
+  font-size: 1.25rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.trip-hero-vehicle > div span {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.trip-hero-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0 0 1.1rem;
+}
+
+.trip-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+@media (max-width: 560px) {
+  .trip-hero {
+    padding: 1.1rem;
+  }
+
+  .trip-hero-actions .btn,
+  .trip-hero-actions .inline-form {
+    width: 100%;
+  }
+}
+
+.start-trip-form {
+  flex: 1 1 240px;
+}
+
+.start-trip {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.15rem;
+  width: 100%;
+  padding: 1rem 1.1rem;
+  border: 2px solid var(--line-blue);
+  border-radius: var(--radius);
+  background: var(--line-blue-soft);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.start-trip:hover {
+  background: #d4e2f7;
+}
+
+.start-trip strong {
+  font-family: var(--font-sign);
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--line-blue-dark);
+}
+
+.start-trip span {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.start-trip .start-trip-count {
+  margin-top: 0.35rem;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.timeline-static {
+  padding: 0;
+}
+
+/* Escala semanal do motorista. */
+.schedule {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.4rem;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  list-style: none;
+}
+
+.schedule li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.2rem;
+  border-radius: var(--radius-sm);
+  background: var(--concrete);
+  text-align: center;
+}
+
+.schedule li.is-today {
+  background: var(--signal-soft);
+  box-shadow: inset 0 0 0 2px var(--signal);
+}
+
+.schedule-day {
+  font-weight: 700;
+}
+
+.schedule .plate {
+  font-size: 0.7rem;
+  letter-spacing: 0.02em;
+}
+
+.schedule .muted {
+  font-size: 0.8rem;
+}
+
+@media (max-width: 560px) {
+  .schedule {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* As quatro etapas do dia do aluno como uma linha horizontal com estações. */
+.day-line {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.day-line li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 28px 0.25rem 0;
+  text-align: center;
+}
+
+.day-line li::before {
+  content: "";
+  position: absolute;
+  top: 9px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--line-blue);
+}
+
+.day-line li:first-child::before { left: 50%; }
+.day-line li:last-child::before { right: 50%; }
+
+.day-line li::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  width: 18px;
+  height: 18px;
+  border: 3px solid var(--line-blue);
+  border-radius: 50%;
+  background: var(--surface);
+  transform: translateX(-50%);
+}
+
+.day-line li.is-done::before { background: var(--ink-faint); }
+.day-line li.is-done::after { border-color: var(--go); background: var(--go); }
+.day-line li.is-next::after { border-color: var(--ink); background: var(--signal); }
+
+.day-line-label {
+  font-size: 0.85rem;
+  line-height: 1.25;
+}
+
+.day-line-time {
+  color: var(--ink-soft);
+  font-weight: 700;
+}
+
+.facts {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.facts div {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.facts dt {
+  color: var(--ink-soft);
+}
+
+.facts dd {
+  margin: 0;
+  font-weight: 700;
+}
+
+@media (max-width: 560px) {
+  .facts div {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+/* ---------- Login e cadastro ---------- */
+
+.auth-page {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.auth-art {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 2.5rem;
+  background: var(--line-blue);
+  color: #fff;
+  overflow: hidden;
+}
+
+.auth-art .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: var(--font-sign);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.auth-art .brand-mark {
+  background: #fff;
+}
+
+.auth-art .brand-mark::before {
+  background: var(--line-blue);
+}
+
+.auth-art .brand-mark::after {
+  border-color: var(--line-blue);
+  background: #fff;
+  box-shadow: 15px 0 0 -2px var(--signal), 15px 0 0 0 var(--line-blue);
+}
+
+.auth-art-lines {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.auth-art-copy {
+  position: relative;
+  max-width: 26rem;
+}
+
+.auth-art-copy h2 {
+  margin: 0 0 0.75rem;
+  font-size: 2.6rem;
+  line-height: 1.05;
+}
+
+.auth-art-copy p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 1.05rem;
+}
+
+.auth-main {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.5rem;
+  background: var(--surface);
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+}
+
+.auth-card h1 {
+  margin: 0 0 1.5rem;
+  font-size: 2rem;
+}
+
+.wizard-step {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 0.5rem;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+/* Etapas do cadastro como duas estações na linha. */
+.wizard-line {
+  display: inline-flex;
+  align-items: center;
+}
+
+.wizard-line i {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border: 3px solid var(--line-blue);
+  border-radius: 50%;
+  background: var(--surface);
+}
+
+.wizard-line i.is-current {
+  border-color: var(--ink);
+  background: var(--signal);
+}
+
+.wizard-line i.is-done {
+  background: var(--line-blue);
+}
+
+.wizard-line b {
+  display: block;
+  width: 22px;
+  height: 3px;
+  background: var(--line-blue);
+}
+
+.auth-alt-action {
+  margin-top: 1.5rem;
+  color: var(--ink-soft);
+  font-size: 0.95rem;
+}
+
+.auth-alt-action a {
+  font-weight: 700;
+}
+
+@media (max-width: 860px) {
+  .auth-page {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .auth-art {
+    min-height: 0;
+    padding: 1.25rem 1.25rem 1.5rem;
+    gap: 1.25rem;
+  }
+
+  .auth-art-copy h2 {
+    font-size: 1.6rem;
+  }
+
+  .auth-art-copy p {
+    font-size: 0.95rem;
+  }
+
+  .auth-main {
+    align-items: flex-start;
+  }
+}
+
+/* ---------- Aluno: tela do ônibus ---------- */
+
+.eta-callout {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.6rem;
+  margin: 0 0 1rem;
+}
+
+.eta-callout strong {
+  font-family: var(--font-sign);
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.checkin-hint {
+  margin: 0.6rem 0 0;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+/* ---------- Motorista ---------- */
+
+.trip-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.trip-controls-source {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.passenger-group {
+  margin-bottom: 1rem;
+}
+
+.passenger-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.passenger-list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0;
+  border-top: 1px solid var(--rule-soft);
+}
+
+.passenger-list li > div {
+  flex: 1;
+  min-width: 10rem;
+}
+
+.passenger-list .status-badge {
+  margin-left: 0;
+}
+
+.reorder-list {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.reorder-list .stop-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  padding: 0.75rem 1rem;
+  cursor: grab;
+}
+
+.reorder-list .stop-row:active {
+  cursor: grabbing;
+}
+
+.drag-handle {
+  color: var(--ink-faint);
+  font-size: 1.2rem;
+  letter-spacing: -0.15em;
+}
+
+/* ---------- Frota e rotas ---------- */
+
+.occupancy {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.occupancy-bar {
+  display: block;
+  width: 64px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--rule-soft);
+  overflow: hidden;
+}
+
+.occupancy-bar span {
+  display: block;
+  height: 100%;
+  background: var(--line-blue);
+}
+
+.route-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+.route-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.1rem 1.25rem;
+  border: 1px solid var(--rule);
+  border-top: 5px solid var(--line-blue);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.route-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.route-card-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.route-card-ends {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.route-card-to {
+  color: var(--ink-faint);
+  font-size: 0.8rem;
+}
+
+.panel-live {
+  border-left: 6px solid var(--signal);
+}
+
+.passenger-stops {
+  margin-top: 0.75rem;
+}
+
+.passenger-stops .timeline-item {
+  padding-bottom: 1.25rem;
+}
+
+.passenger-group .passenger-list {
+  margin-top: 0.4rem;
+}
+
+.unmatched-title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 1rem 0 0.25rem;
+  color: var(--signal-ink);
+  font-size: 1rem;
+}
+
+.trip-hero-footer {
+  margin-top: 1.1rem;
+  padding-top: 1.1rem;
+  border-top: 1px solid var(--rule-soft);
+}
+
+.page-subtitle .plate {
+  margin-right: 0.5rem;
+  vertical-align: 0.1em;
+}
+
+.center-link {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.full-width-form {
+  width: 100%;
+}
+
+.qr-panel h1 {
+  margin: 0;
+}
+
+.qr-panel .muted .plate {
+  margin-right: 0.4rem;
+}
+
+@media (max-width: 720px) {
+  /* Lista de membros no celular: papel e detalhes como linha secundária. */
+  .data-table.stack .cell-role,
+  .data-table.stack .cell-details {
+    display: inline;
+    width: auto;
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+  }
+
+  .data-table.stack .cell-role::after {
+    content: " ";
+  }
+
+  .data-table.stack .cell-details .cell-sub {
+    display: inline;
+  }
+
+  .data-table.stack .cell-main + * {
+    margin-top: 0.25rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .day-line-label {
+    font-size: 0.78rem;
+    hyphens: auto;
+    overflow-wrap: anywhere;
+  }
+}

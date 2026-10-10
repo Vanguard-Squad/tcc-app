@@ -1,69 +1,76 @@
 <% content_for :title, "Cadastrar empresa" %>
 
 <main class="auth-page">
-  <div class="auth-card">
-    <p class="wizard-step">Etapa 2 de 2 &middot; Sua empresa</p>
-    <h1>Cadastre sua empresa</h1>
+  <%= render "shared/auth_art" %>
 
-    <%= render "shared/form_errors", object: @company %>
+  <div class="auth-main">
+    <div class="auth-card">
+      <p class="wizard-step">
+        <span class="wizard-line" aria-hidden="true"><i class="is-done"></i><b></b><i class="is-current"></i></span>
+        Etapa 2 de 2: sua empresa
+      </p>
+      <h1>Cadastre sua empresa</h1>
 
-    <%= form_with model: @company, url: registration_companies_path, local: true, class: "auth-form" do |form| %>
-      <div class="field">
-        <%= form.label :name, "Nome da empresa" %>
-        <%= form.text_field :name, required: true, autofocus: true %>
-      </div>
+      <%= render "shared/form_errors", object: @company %>
 
-      <div class="field">
-        <%= form.label :cnpj, "CNPJ" %>
-        <%= form.text_field :cnpj, required: true %>
-      </div>
-
-      <%= form.fields_for :address do |address_form| %>
-        <div data-controller="cep-lookup">
-          <div class="field">
-            <%= address_form.label :zip_code, "CEP" %>
-            <%= address_form.text_field :zip_code, required: true,
-                  data: { "cep-lookup-target": "zipCode", action: "input->cep-lookup#lookup" } %>
-            <p class="field-hint">Digite o CEP para preencher rua, bairro e cidade automaticamente.</p>
-          </div>
-
-          <div class="field">
-            <%= address_form.label :street, "Rua" %>
-            <%= address_form.text_field :street, required: true, data: { "cep-lookup-target": "street" } %>
-          </div>
-
-          <div class="field-row">
-            <div class="field">
-              <%= address_form.label :number, "Número" %>
-              <%= address_form.number_field :number, required: true %>
-            </div>
-
-            <div class="field">
-              <%= address_form.label :complement, "Complemento" %>
-              <%= address_form.text_field :complement %>
-            </div>
-          </div>
-
-          <div class="field">
-            <%= address_form.label :neighborhood, "Bairro" %>
-            <%= address_form.text_field :neighborhood, required: true, data: { "cep-lookup-target": "neighborhood" } %>
-          </div>
-
-          <div class="field-row">
-            <div class="field">
-              <%= address_form.label :city, "Cidade" %>
-              <%= address_form.text_field :city, required: true, data: { "cep-lookup-target": "city" } %>
-            </div>
-
-            <div class="field">
-              <%= address_form.label :country, "País" %>
-              <%= address_form.text_field :country, required: true %>
-            </div>
-          </div>
+      <%= form_with model: @company, url: registration_companies_path, local: true, class: "auth-form" do |form| %>
+        <div class="field">
+          <%= form.label :name, "Nome da empresa" %>
+          <%= form.text_field :name, required: true, autofocus: true %>
         </div>
-      <% end %>
 
-      <%= form.submit "Concluir cadastro", class: "btn btn-primary" %>
-    <% end %>
+        <div class="field">
+          <%= form.label :cnpj, "CNPJ" %>
+          <%= form.text_field :cnpj, required: true %>
+        </div>
+
+        <%= form.fields_for :address do |address_form| %>
+          <div data-controller="cep-lookup">
+            <div class="field">
+              <%= address_form.label :zip_code, "CEP" %>
+              <%= address_form.text_field :zip_code, required: true,
+                    data: { "cep-lookup-target": "zipCode", action: "input->cep-lookup#lookup" } %>
+              <p class="field-hint">Digite o CEP para preencher rua, bairro e cidade automaticamente.</p>
+            </div>
+
+            <div class="field">
+              <%= address_form.label :street, "Rua" %>
+              <%= address_form.text_field :street, required: true, data: { "cep-lookup-target": "street" } %>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <%= address_form.label :number, "Número" %>
+                <%= address_form.number_field :number, required: true %>
+              </div>
+
+              <div class="field">
+                <%= address_form.label :complement, "Complemento" %>
+                <%= address_form.text_field :complement %>
+              </div>
+            </div>
+
+            <div class="field">
+              <%= address_form.label :neighborhood, "Bairro" %>
+              <%= address_form.text_field :neighborhood, required: true, data: { "cep-lookup-target": "neighborhood" } %>
+            </div>
+
+            <div class="field-row">
+              <div class="field">
+                <%= address_form.label :city, "Cidade" %>
+                <%= address_form.text_field :city, required: true, data: { "cep-lookup-target": "city" } %>
+              </div>
+
+              <div class="field">
+                <%= address_form.label :country, "País" %>
+                <%= address_form.text_field :country, required: true %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+
+        <%= form.submit "Concluir cadastro", class: "btn btn-primary" %>
+      <% end %>
+    </div>
   </div>
 </main>

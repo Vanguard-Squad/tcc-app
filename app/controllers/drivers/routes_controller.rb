@@ -24,6 +24,7 @@ module Drivers
       ordered_ids = Array(params[:stop_ids]).map(&:to_i)
       if ordered_ids.sort == @route.stops.pluck(:id).sort
         Stop.transaction { ordered_ids.each_with_index { |id, index| Stop.where(id: id).update_all(step: index + 1) } }
+        audit("route.stops_reordered", @route)
         redirect_to drivers_route_path, notice: "Ordem das paradas atualizada."
       else
         redirect_to edit_drivers_route_path, alert: "Não foi possível salvar a nova ordem."

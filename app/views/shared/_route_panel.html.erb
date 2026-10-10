@@ -1,0 +1,40 @@
+<%# Painel ao lado do mapa: próxima parada, progresso e linha do tempo das
+    paradas. Os textos são atualizados em tempo real por lib/route_map.js. %>
+<% highlight_stop_id ||= nil %>
+
+<aside class="route-panel">
+  <div class="route-panel-header">
+    <% if trip %>
+      <span class="route-panel-kicker">Próxima parada</span>
+      <strong class="route-panel-next" data-progress="next-label">Aguardando localização do ônibus…</strong>
+      <span class="route-panel-meta" data-progress="next-meta"></span>
+      <div class="progress" role="presentation"><div class="progress-bar" data-progress="bar"></div></div>
+      <span class="route-panel-meta" data-progress="summary"><%= pluralize(stops.size, "parada", "paradas") %></span>
+      <% if local_assigns[:mine] %>
+        <span class="route-panel-mine" data-bus-tracker-target="mine"></span>
+      <% end %>
+    <% else %>
+      <span class="route-panel-kicker">Percurso</span>
+      <strong class="route-panel-next" data-progress="route-summary"><%= pluralize(stops.size, "parada", "paradas") %></strong>
+    <% end %>
+  </div>
+
+  <ol class="timeline">
+    <% stops.each do |stop| %>
+      <% mine = highlight_stop_id && stop[:id] == highlight_stop_id %>
+      <li class="timeline-item is-upcoming<%= " is-mine" if mine %>" data-stop-id="<%= stop[:id] %>">
+        <span class="timeline-dot"><%= stop[:step] %></span>
+        <div class="timeline-body">
+          <span class="timeline-title">
+            <%= stop[:label] %>
+            <% if mine %><span class="timeline-tag">Seu ponto</span><% end %>
+          </span>
+          <span class="timeline-meta" data-timeline-meta><%= "Sem localização no mapa" unless stop[:lat] %></span>
+        </div>
+      </li>
+    <% end %>
+    <% if stops.empty? %>
+      <li class="timeline-empty">Nenhuma parada cadastrada nesta rota.</li>
+    <% end %>
+  </ol>
+</aside>

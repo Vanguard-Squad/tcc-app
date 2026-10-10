@@ -15,6 +15,7 @@ module Students
       @route = @vehicle&.route
       return unless @route
 
+      @stops = @route.stops.includes(:address).to_a
       @stop = @student.nearest_stop_for(@route)
       @checkin = Checkin.today_for(student: @student, vehicle: @vehicle)
       return unless @trip

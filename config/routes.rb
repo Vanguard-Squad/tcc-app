@@ -22,16 +22,25 @@ Rails.application.routes.draw do
   get  "/cadastro/empresa", to: "registrations/companies#new", as: :new_registration_company
   post "/cadastro/empresa", to: "registrations/companies#create", as: :registration_companies
 
+  get "/auditoria", to: "audit_logs#index", as: :audit_logs
+
   get "/membros", to: "members#index", as: :members
+  patch "/membros/:id/ativacao", to: "members#toggle_active", as: :toggle_active_member
 
   get  "/membros/secretarias/novo", to: "members/managers#new", as: :new_member_manager
   post "/membros/secretarias",      to: "members/managers#create", as: :member_managers
+  get  "/membros/secretarias/:id/editar", to: "members/managers#edit", as: :edit_member_manager
+  patch "/membros/secretarias/:id",       to: "members/managers#update", as: :member_manager
 
   get  "/membros/motoristas/novo", to: "members/drivers#new", as: :new_member_driver
   post "/membros/motoristas",      to: "members/drivers#create", as: :member_drivers
+  get  "/membros/motoristas/:id/editar", to: "members/drivers#edit", as: :edit_member_driver
+  patch "/membros/motoristas/:id",       to: "members/drivers#update", as: :member_driver
 
   get  "/membros/alunos/novo", to: "members/students#new", as: :new_member_student
   post "/membros/alunos",      to: "members/students#create", as: :member_students
+  get  "/membros/alunos/:id/editar", to: "members/students#edit", as: :edit_member_student
+  patch "/membros/alunos/:id",       to: "members/students#update", as: :member_student
 
   resources :vehicles, path: "frota", only: %i[index new create edit update]
   resources :routes, path: "rotas", only: %i[index new create edit update]
@@ -42,10 +51,12 @@ Rails.application.routes.draw do
     end
     resource :trip, path: "viagem", only: %i[create destroy]
     resource :trip_position, path: "viagem/posicao", only: :create
+    resource :trip_qr_code, path: "viagem/qrcode", only: :show
   end
 
   namespace :students, path: "aluno" do
     resource :trip, path: "", only: :show
     resources :checkins, only: :create
+    resource :qr_checkin, path: "checkin/qr", only: %i[show create]
   end
 end

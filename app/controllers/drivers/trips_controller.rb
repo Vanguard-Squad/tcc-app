@@ -14,6 +14,7 @@ module Drivers
 
       if trip.save
         trip.broadcast_state("started")
+        audit("trip.started", trip)
         redirect_to drivers_route_path, notice: "Viagem iniciada."
       else
         redirect_to drivers_route_path, alert: trip.errors.full_messages.to_sentence
@@ -24,7 +25,10 @@ module Drivers
 
     def destroy
       trip = current_user.driver.active_trip
-      trip&.finish!
+      if trip
+        trip.finish!
+        audit("trip.finished", trip)
+      end
       redirect_to drivers_route_path, notice: "Viagem finalizada."
     end
   end

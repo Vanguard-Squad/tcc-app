@@ -2,40 +2,92 @@
 
 <main class="page">
   <div class="page-header">
-    <h1>Membros</h1>
+    <div>
+      <h1>Membros</h1>
+      <p class="page-subtitle">Alunos, motoristas e secretaria da <%= current_company.name %>.</p>
+    </div>
     <div class="page-header-actions">
       <% if current_user.owner? %>
-        <%= link_to "Cadastrar secretaria", new_member_manager_path, class: "btn btn-secondary btn-inline" %>
+        <%= link_to new_member_manager_path, class: "btn btn-secondary" do %><%= icon(:plus, size: 18) %> Secretaria<% end %>
       <% end %>
-      <%= link_to "Cadastrar motorista", new_member_driver_path, class: "btn btn-secondary btn-inline" %>
-      <%= link_to "Cadastrar aluno", new_member_student_path, class: "btn btn-primary btn-inline" %>
+      <%= link_to new_member_driver_path, class: "btn btn-secondary" do %><%= icon(:plus, size: 18) %> Motorista<% end %>
+      <%= link_to new_member_student_path, class: "btn btn-primary" do %><%= icon(:plus, size: 18) %> Aluno<% end %>
     </div>
   </div>
 
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th>Nome</th>
-        <th>E-mail</th>
-        <th>Papel</th>
-        <th>Detalhes</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @members.each do |member| %>
-        <tr>
-          <td><%= member.name %></td>
-          <td><%= member.email %></td>
-          <td><%= role_label(member.role) %></td>
-          <td>
-            <% if member.driver? && member.driver %>
-              CNH: <%= member.driver.drive_license %>
-            <% elsif member.student? && member.student %>
-              CPF: <%= member.student.cpf %> &middot; <%= member.student.college.label_with_city %>
-            <% end %>
-          </td>
-        </tr>
+  <div class="toolbar">
+    <nav class="segmented" aria-label="Filtrar por papel">
+      <% [ [ nil, "Todos", @total ], [ "alunos", "Alunos", @counts["student"] ], [ "motoristas", "Motoristas", @counts["driver"] ], [ "secretaria", "Secretaria", @counts["manager"] ] ].each do |key, label, count| %>
+        <%= link_to members_path(papel: key, q: params[:q].presence), class: ("is-active" if @filter == key), "aria-current": (@filter == key ? "page" : nil) do %>
+          <%= label %><span class="count"><%= count.to_i %></span>
+        <% end %>
       <% end %>
-    </tbody>
-  </table>
+    </nav>
+
+    <%= form_with url: members_path, method: :get, local: true, class: "search-field", role: "search" do |form| %>
+      <%= hidden_field_tag :papel, @filter if @filter %>
+      <%= icon(:search, size: 18) %>
+      <%= form.search_field :q, value: params[:q], placeholder: "Buscar por nome ou e-mail", "aria-label": "Buscar membros" %>
+    <% end %>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data-table stack">
+      <thead>
+        <tr>
+          <th>Nome</th>
+          <th>Papel</th>
+          <th>Detalhes</th>
+          <th>Situação</th>
+          <th><span class="visually-hidden">Ações</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @members.each do |member| %>
+          <tr>
+            <td>
+              <div class="cell-main">
+                <%= avatar(member) %>
+                <div>
+                  <strong><%= member.name %></strong>
+                  <span class="cell-sub"><%= member.email %></span>
+                </div>
+              </div>
+            </td>
+            <td class="cell-role"><%= role_label(member.role) %></td>
+            <td class="cell-details">
+              <% if member.driver? && member.driver %>
+                <span class="cell-sub">CNH <%= member.driver.drive_license %></span>
+              <% elsif member.student? && member.student %>
+                <%= member.student.college.name %>
+                <span class="cell-sub">CPF <%= member.student.cpf %></span>
+              <% end %>
+            </td>
+            <td>
+              <% if member.is_active? %>
+                <span class="status-badge status-active">Ativo</span>
+              <% else %>
+                <span class="status-badge status-inactive">Inativo</span>
+              <% end %>
+            </td>
+            <td class="cell-actions">
+              <% if current_user.can_manage?(member) %>
+                <%= link_to "Editar", edit_member_path_for(member), class: "btn btn-secondary btn-small" %>
+                <%= button_to member.is_active? ? "Desativar" : "Reativar", toggle_active_member_path(member), method: :patch,
+                      class: [ "btn btn-small", member.is_active? ? "btn-danger" : "btn-secondary" ], form_class: "inline-form",
+                      form: { data: { turbo_confirm: member.is_active? ? "Desativar #{member.name}? A pessoa não conseguirá mais entrar." : nil } } %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <% if @members.empty? %>
+      <div class="empty-state">
+        <strong><%= params[:q].present? ? "Ninguém encontrado para \"#{params[:q]}\"" : "Nenhum membro aqui ainda" %></strong>
+        <%= params[:q].present? ? "Confira a grafia ou busque pelo e-mail." : "Cadastre alunos e motoristas pelos botões acima." %>
+      </div>
+    <% end %>
+  </div>
 </main>

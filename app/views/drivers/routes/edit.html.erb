@@ -1,15 +1,16 @@
 <% content_for :title, "Reordenar paradas" %>
 
 <main class="page page-narrow">
+  <%= back_link "Minha rota", drivers_route_path %>
   <h1>Reordenar paradas</h1>
 
   <% if @route.nil? %>
     <p>Você ainda não tem uma rota atribuída.</p>
   <% else %>
-    <p class="field-hint">Arraste as paradas para mudar a ordem e clique em salvar.</p>
+    <p class="page-subtitle">Arraste as paradas para a ordem em que você passa por elas.</p>
 
-    <%= form_with url: drivers_route_path, method: :patch, local: true, data: { controller: "stop-reorder" } do %>
-      <ul data-stop-reorder-target="list" style="list-style: none; padding: 0;">
+    <%= form_with url: drivers_route_path, method: :patch, local: true, class: "form", data: { controller: "stop-reorder" } do %>
+      <ul class="reorder-list" data-stop-reorder-target="list">
         <% @stops.each do |stop| %>
           <li
             class="stop-row"
@@ -18,16 +19,15 @@
             draggable="true"
             data-action="dragstart->stop-reorder#dragStart dragover->stop-reorder#dragOver drop->stop-reorder#drop"
           >
-            <div class="stop-row-header">
-              <span class="stop-row-title"><%= stop.step %>. <%= stop.address.label_with_city %></span>
-            </div>
+            <span class="drag-handle" aria-hidden="true">⋮⋮</span>
+            <span class="stop-row-title"><%= stop.step %>. <%= stop.address.label_with_city %></span>
           </li>
         <% end %>
       </ul>
 
       <div data-stop-reorder-target="hiddenFields"></div>
 
-      <%= submit_tag "Salvar nova ordem", class: "btn btn-primary" %>
+      <%= submit_tag "Salvar nova ordem", class: "btn btn-primary btn-block" %>
     <% end %>
   <% end %>
 </main>

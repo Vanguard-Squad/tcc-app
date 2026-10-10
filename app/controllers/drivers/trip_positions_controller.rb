@@ -10,7 +10,10 @@ module Drivers
       longitude = Float(params[:longitude], exception: false)
       return head :unprocessable_entity unless latitude&.between?(-90, 90) && longitude&.between?(-180, 180)
 
-      trip.update_position!(latitude, longitude)
+      accuracy = Float(params[:accuracy], exception: false)
+      accuracy = nil unless accuracy&.between?(0, 100_000)
+
+      trip.update_position!(latitude, longitude, accuracy: accuracy&.round(1))
       head :no_content
     end
   end

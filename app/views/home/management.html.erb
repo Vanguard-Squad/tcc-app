@@ -1,0 +1,116 @@
+<% content_for :title, "Início" %>
+<% live = @dashboard.live_trips %>
+
+<main class="page">
+  <div class="page-header">
+    <div>
+      <h1>Operação de hoje</h1>
+      <p class="page-subtitle"><%= l(Date.current, format: :weekday).capitalize %></p>
+    </div>
+    <div class="page-header-actions">
+      <%= link_to new_vehicle_path, class: "btn btn-secondary" do %><%= icon(:plus, size: 18) %> Ônibus<% end %>
+      <%= link_to new_route_path, class: "btn btn-secondary" do %><%= icon(:plus, size: 18) %> Rota<% end %>
+      <%= link_to new_member_student_path, class: "btn btn-primary" do %><%= icon(:plus, size: 18) %> Aluno<% end %>
+    </div>
+  </div>
+
+  <ul class="stat-strip">
+    <li>
+      <% if live.any? %><span class="live-dot" aria-hidden="true"></span><% end %>
+      <strong class="numeric"><%= live.size %></strong> de <%= @dashboard.active_vehicles_count %> ônibus em rota
+    </li>
+    <li><strong class="numeric"><%= @dashboard.boarded_today_count %></strong> <%= @dashboard.boarded_today_count == 1 ? "aluno embarcou" : "alunos embarcaram" %> hoje</li>
+    <li><strong class="numeric"><%= @dashboard.students_count %></strong> alunos ativos</li>
+  </ul>
+
+  <div class="dash-grid">
+    <section class="panel panel-flush dash-live" aria-labelledby="live-title">
+      <div class="panel-header">
+        <h2 class="panel-title" id="live-title">Em rota agora</h2>
+        <% if live.any? %><span class="status-badge status-active">Ao vivo</span><% end %>
+      </div>
+
+      <% if live.any? %>
+        <div class="fleet-map" data-controller="fleet-map"
+             data-fleet-map-buses-value="<%= live.map { |item| { vehicleId: item.trip.vehicle_id, plate: item.trip.vehicle.license_plate, lat: item.trip.latitude, lng: item.trip.longitude } }.to_json %>"></div>
+
+        <ul class="live-list">
+          <% live.each do |item| %>
+            <% trip = item.trip %>
+            <li class="live-row">
+              <%= plate(trip.vehicle.license_plate) %>
+              <div class="live-row-main">
+                <strong><%= trip.vehicle.route&.name || "Sem rota" %></strong>
+                <span class="cell-sub">
+                  <%= trip.outbound? ? "Ida" : "Volta" %>, saiu às <%= l(trip.started_at, format: "%H:%M") %> com <%= trip.driver.user.name %>
+                </span>
+              </div>
+              <div class="live-row-count">
+                <span class="numeric"><%= item.boarded %>/<%= item.total %></span>
+                <span class="cell-sub">a bordo</span>
+              </div>
+              <span class="cell-sub live-row-seen">
+                <% if trip.position_at %>
+                  <%= icon(:pin, size: 16) %> há <%= time_ago_in_words(trip.position_at) %>
+                <% else %>
+                  Sem localização
+                <% end %>
+              </span>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <div class="empty-state">
+          <%= icon(:bus, size: 36, css: "empty-icon") %>
+          <strong>Nenhum ônibus em rota agora</strong>
+          Quando um motorista iniciar a viagem, o ônibus aparece aqui no mapa em tempo real.
+        </div>
+      <% end %>
+    </section>
+
+    <div class="dash-side">
+      <section class="panel" aria-labelledby="alerts-title">
+        <h2 class="panel-title" id="alerts-title">Precisa de atenção</h2>
+        <% alerts = @dashboard.alerts %>
+        <% if alerts.any? %>
+          <ul class="alert-list">
+            <% alerts.each do |alert| %>
+              <li>
+                <%= link_to public_send(alert.path) do %>
+                  <span class="alert-count numeric"><%= alert.count %></span>
+                  <span><%= alert.message %></span>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="all-clear"><%= icon(:check, size: 18) %> Tudo certo com a frota, as rotas e os alunos.</p>
+        <% end %>
+      </section>
+
+      <section class="panel" aria-labelledby="activity-title">
+        <div class="panel-header">
+          <h2 class="panel-title" id="activity-title">Check-ins de hoje</h2>
+          <% if current_user.owner? %><%= link_to "Auditoria", audit_logs_path, class: "panel-link" %><% end %>
+        </div>
+        <% recent = @dashboard.recent_checkins %>
+        <% if recent.any? %>
+          <ul class="activity-list">
+            <% recent.each do |entry| %>
+              <li>
+                <%= avatar(entry[:checkin].student.user, size: :sm) %>
+                <div>
+                  <strong><%= entry[:checkin].student.user.name %></strong>
+                  <span class="cell-sub"><%= Checkin::EVENT_LABELS.fetch(entry[:step]) %></span>
+                </div>
+                <time class="numeric"><%= l(entry[:at], format: "%H:%M") %></time>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="muted">Ninguém fez check-in hoje ainda.</p>
+        <% end %>
+      </section>
+    </div>
+  </div>
+</main>

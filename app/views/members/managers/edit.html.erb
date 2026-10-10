@@ -1,0 +1,10 @@
+<% content_for :title, "Editar secretaria" %>
+
+<main class="page page-narrow">
+  <%= back_link "Membros", members_path %>
+  <h1>Editar secretaria</h1>
+
+  <section class="panel">
+    <%= render "form", user: @user, url: member_manager_path(@user), submit_label: "Salvar alterações" %>
+  </section>
+</main>

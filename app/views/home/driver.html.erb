@@ -1,0 +1,91 @@
+<% content_for :title, "Início" %>
+<% trip = @dashboard.active_trip %>
+<% vehicle = @dashboard.vehicle %>
+<% route = @dashboard.route %>
+
+<main class="page">
+  <div class="page-header">
+    <div>
+      <h1><%= trip ? "Viagem em andamento" : "Sua viagem de hoje" %></h1>
+      <p class="page-subtitle"><%= l(Date.current, format: :weekday).capitalize %></p>
+    </div>
+  </div>
+
+  <% if vehicle.nil? || route.nil? %>
+    <section class="panel empty-state">
+      <%= icon(:bus, size: 36, css: "empty-icon") %>
+      <strong><%= vehicle ? "Seu ônibus de hoje ainda não tem rota" : "Você ainda não tem ônibus na escala" %></strong>
+      Fale com a secretaria para receber um ônibus e uma rota.
+    </section>
+  <% else %>
+    <section class="trip-hero <%= "is-live" if trip %>">
+      <div class="trip-hero-vehicle">
+        <%= plate(vehicle.license_plate) %>
+        <div>
+          <strong><%= route.name %></strong>
+          <span><%= pluralize(@dashboard.stops.size, "parada", "paradas") %></span>
+        </div>
+      </div>
+
+      <% if trip %>
+        <% boarded, total = @dashboard.counts(trip.direction) %>
+        <p class="trip-hero-status">
+          <span class="live-dot" aria-hidden="true"></span>
+          <%= trip.outbound? ? "Ida" : "Volta" %> desde as <%= l(trip.started_at, format: "%H:%M") %>.
+          <strong class="numeric"><%= boarded %> de <%= total %></strong> passageiros a bordo.
+        </p>
+        <div class="trip-hero-actions">
+          <%= link_to drivers_route_path, class: "btn btn-primary btn-large" do %><%= icon(:route) %> Abrir mapa da rota<% end %>
+          <%= link_to drivers_trip_qr_code_path, class: "btn btn-secondary btn-large" do %><%= icon(:qr) %> QR code de check-in<% end %>
+        </div>
+      <% else %>
+        <p class="trip-hero-status">Escolha o trecho para começar. Os alunos passam a ver o ônibus no mapa.</p>
+        <div class="trip-hero-actions">
+          <% [ [ "outbound", "Iniciar ida", "Embarque nos pontos, destino faculdade" ], [ "return", "Iniciar volta", "Saída da faculdade, desembarque nos pontos" ] ].each do |direction, label, hint| %>
+            <% _boarded, total = @dashboard.counts(direction) %>
+            <%= button_to drivers_trip_path, params: { direction: direction }, class: "start-trip", form_class: "start-trip-form" do %>
+              <strong><%= label %></strong>
+              <span><%= hint %></span>
+              <span class="start-trip-count"><%= pluralize(total, "passageiro", "passageiros") %></span>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </section>
+
+    <div class="dash-grid dash-grid-even">
+      <section class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Paradas da rota</h2>
+          <%= link_to "Ver no mapa", drivers_route_path, class: "panel-link" %>
+        </div>
+        <ol class="timeline timeline-static">
+          <% @dashboard.stops.each do |stop| %>
+            <li class="timeline-item">
+              <span class="timeline-dot"><%= stop.step %></span>
+              <div class="timeline-body">
+                <span class="timeline-title"><%= stop.address.label_with_city %></span>
+              </div>
+            </li>
+          <% end %>
+        </ol>
+      </section>
+
+      <section class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">Sua escala</h2>
+        </div>
+        <ul class="schedule">
+          <% Driver::WEEK_DAYS.each_with_index do |day, index| %>
+            <% assigned = @dashboard.schedule.to_h[day] %>
+            <li class="<%= "is-today" if day == @dashboard.today %> <%= "is-off" unless assigned %>">
+              <span class="schedule-day"><%= t("date.abbr_day_names")[index].capitalize %></span>
+              <%= assigned ? plate(assigned.license_plate) : tag.span("Folga", class: "muted") %>
+            </li>
+          <% end %>
+        </ul>
+        <p class="field-hint">Dias sem ônibus definido usam o primeiro ônibus da sua escala.</p>
+      </section>
+    </div>
+  <% end %>
+</main>

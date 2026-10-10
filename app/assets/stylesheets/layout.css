@@ -1,0 +1,382 @@
+/* ---------- Estrutura do app ---------- */
+
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.app-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 2.25rem 2rem 3rem;
+}
+
+.page-narrow {
+  max-width: 620px;
+}
+
+.page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin: 0 0 1.5rem;
+}
+
+.page-header h1 {
+  margin: 0;
+}
+
+.page-subtitle {
+  margin: 0.35rem 0 0;
+  color: var(--ink-soft);
+}
+
+.page-header-actions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: var(--line-blue);
+}
+
+/* ---------- Marca ---------- */
+
+/* Marca: um trecho de linha com duas estações, a última em amarelo. */
+.brand-mark {
+  position: relative;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--line-blue);
+}
+
+.brand-mark::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 16px;
+  height: 3px;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.brand-mark::after {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: 6px;
+  width: 7px;
+  height: 7px;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--line-blue);
+  box-shadow: 15px 0 0 -2px var(--signal), 15px 0 0 0 #fff;
+}
+
+/* ---------- Menu-linha (computador) ---------- */
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  width: 248px;
+  height: 100vh;
+  padding: 1.5rem 1.1rem 1rem;
+  background: var(--surface);
+  border-right: 1px solid var(--rule);
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0 0.35rem 1.75rem;
+}
+
+.sidebar-brand strong {
+  display: block;
+  font-family: var(--font-sign);
+  font-size: 1.1rem;
+  font-weight: 700;
+  line-height: 1.15;
+}
+
+.sidebar-brand span {
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
+/* As páginas são estações numa linha vertical; a atual fica em amarelo. */
+.nav-line {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  flex: 1;
+}
+
+.nav-line::before {
+  content: "";
+  position: absolute;
+  top: 22px;
+  left: 21px;
+  width: 3px;
+  height: calc(var(--nav-count, 1) * 44px + (var(--nav-count, 1) - 1) * 0.25rem - 44px);
+  border-radius: 2px;
+  background: var(--line-blue-soft);
+}
+
+.nav-item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem 0.5rem 0.6rem;
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+}
+
+.nav-station {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 21px;
+  height: 21px;
+  margin-left: 2px;
+  border: 3px solid var(--line-blue);
+  border-radius: 50%;
+  background: var(--surface);
+  transition: transform 0.15s ease;
+}
+
+.nav-icon {
+  display: none;
+}
+
+.nav-item:hover {
+  background: var(--concrete);
+  color: var(--ink);
+}
+
+.nav-item:hover .nav-station {
+  transform: scale(1.1);
+}
+
+.nav-item.is-active {
+  background: var(--signal-soft);
+}
+
+.nav-item.is-active .nav-station {
+  border-color: var(--ink);
+  background: var(--signal);
+}
+
+.sidebar-user {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 0.35rem 0;
+  border-top: 1px solid var(--rule-soft);
+}
+
+.sidebar-user-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- Cabeçalho e abas (celular) ---------- */
+
+.topbar,
+.tabbar {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    display: none;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.6rem 1rem;
+    padding-top: max(0.6rem, env(safe-area-inset-top));
+    background: var(--surface);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .topbar-brand {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+    font-family: var(--font-sign);
+    font-size: 1.1rem;
+    font-weight: 700;
+  }
+
+  .topbar-brand > span:last-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .topbar-brand .brand-mark {
+    transform: scale(0.85);
+  }
+
+  .topbar-logout-form {
+    display: inline-flex;
+  }
+
+  .topbar-logout {
+    display: inline-grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--ink-soft);
+  }
+
+  .tabbar {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1000;
+    display: flex;
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--surface);
+    border-top: 1px solid var(--rule);
+  }
+
+  .tab {
+    position: relative;
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.15rem;
+    min-width: 0;
+    padding: 0.5rem 0.25rem 0.45rem;
+    color: var(--ink-soft);
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .tab span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* A aba atual ganha a "estação" amarela em cima do ícone. */
+  .tab.is-active {
+    color: var(--ink);
+  }
+
+  .tab.is-active::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 25%;
+    right: 25%;
+    height: 3px;
+    border-radius: 0 0 3px 3px;
+    background: var(--signal);
+  }
+
+  .app-content {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+  }
+
+  .page {
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  h1 {
+    font-size: 1.6rem;
+  }
+}
+
+/* ---------- Avisos ---------- */
+
+.flash-stack {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 1.25rem 2rem 0;
+}
+
+.flash {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0 0 0.5rem;
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.flash .icon {
+  margin-top: 0.1rem;
+}
+
+.flash-notice {
+  background: var(--go-soft);
+  color: var(--go);
+}
+
+.flash-alert {
+  background: var(--stop-soft);
+  color: var(--stop);
+}
+
+@media (max-width: 900px) {
+  .flash-stack {
+    padding: 0.75rem 1rem 0;
+  }
+}

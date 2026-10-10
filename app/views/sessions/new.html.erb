@@ -1,26 +1,30 @@
 <% content_for :title, "Entrar" %>
 
 <main class="auth-page">
-  <div class="auth-card">
-    <h1>Entrar</h1>
+  <%= render "shared/auth_art" %>
 
-    <%= form_with url: login_path, method: :post, local: true, class: "auth-form" do |form| %>
-      <div class="field">
-        <%= form.label :email, "E-mail" %>
-        <%= form.email_field :email, required: true, autofocus: true %>
-      </div>
+  <div class="auth-main">
+    <div class="auth-card">
+      <h1>Entrar</h1>
 
-      <div class="field">
-        <%= form.label :password, "Senha" %>
-        <%= form.password_field :password, required: true %>
-      </div>
+      <%= form_with url: login_path, method: :post, local: true, class: "auth-form" do |form| %>
+        <div class="field">
+          <%= form.label :email, "E-mail" %>
+          <%= form.email_field :email, required: true, autofocus: true %>
+        </div>
 
-      <%= form.submit "Entrar", class: "btn btn-primary" %>
-    <% end %>
+        <div class="field">
+          <%= form.label :password, "Senha" %>
+          <%= form.password_field :password, required: true %>
+        </div>
 
-    <p class="auth-alt-action">
-      Ainda não tem conta?
-      <%= link_to "Cadastre-se", new_registration_path, class: "btn btn-secondary" %>
-    </p>
+        <%= form.submit "Entrar", class: "btn btn-primary" %>
+      <% end %>
+
+      <p class="auth-alt-action">
+        Sua empresa ainda não usa o sistema?
+        <%= link_to "Cadastre a empresa", new_registration_path %>
+      </p>
+    </div>
   </div>
 </main>

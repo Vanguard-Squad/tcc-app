@@ -11,6 +11,14 @@ class Checkin < ApplicationRecord
     "disembarked_final" => "Desembarquei no meu ponto"
   }.freeze
 
+  # As mesmas etapas, vistas por quem acompanha (gestão, motorista).
+  EVENT_LABELS = {
+    "boarded_initial" => "Embarcou no ponto",
+    "disembarked_college" => "Chegou à faculdade",
+    "boarded_college" => "Embarcou na faculdade",
+    "disembarked_final" => "Desembarcou no ponto"
+  }.freeze
+
   LEG_LABELS = {
     "outbound" => { waiting: "Aguardando embarque", boarded: "Embarcou", done: "Chegou à faculdade" },
     "return" => { waiting: "Aguardando embarque", boarded: "Embarcou", done: "Desembarcou no ponto" }

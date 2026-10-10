@@ -1,0 +1,416 @@
+/* ---------- Mapa da rota e acompanhamento da viagem ---------- */
+
+.route-tracker {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.route-map {
+  height: 540px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: #e6e9ec;
+}
+
+.route-map-short {
+  height: 380px;
+}
+
+.map-empty {
+  padding: 1rem;
+  color: var(--ink-soft);
+}
+
+/* Mapa base atenuado: a rota e os marcadores ficam em primeiro plano. */
+.map-tiles {
+  filter: saturate(0.45) contrast(0.92) brightness(1.04);
+}
+
+.leaflet-container {
+  font-family: var(--font-text);
+}
+
+.leaflet-tooltip {
+  border: 0;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-float);
+  color: var(--ink);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .route-tracker {
+    grid-template-columns: 1fr;
+  }
+
+  .route-map {
+    height: 360px;
+  }
+}
+
+/* ---------- Painel de progresso ---------- */
+
+.route-panel {
+  display: flex;
+  flex-direction: column;
+  max-height: 540px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .route-panel {
+    max-height: none;
+  }
+}
+
+.route-panel-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 1.1rem 1.1rem 1rem;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.route-panel-kicker {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.route-panel-next {
+  font-family: var(--font-sign);
+  font-size: 1.3rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.route-panel-meta {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.route-panel-mine:not(:empty) {
+  margin-top: 0.35rem;
+  padding: 0.5rem 0.7rem;
+  border-left: 4px solid var(--signal);
+  border-radius: var(--radius-sm);
+  background: var(--signal-soft);
+  color: var(--signal-ink);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.progress {
+  height: 8px;
+  margin: 0.4rem 0 0.15rem;
+  border-radius: 999px;
+  background: var(--rule-soft);
+  overflow: hidden;
+}
+
+.progress-bar {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--line-blue);
+  transition: width 0.8s ease;
+}
+
+/* ---------- Linha do tempo (diagrama vertical da linha) ---------- */
+
+.timeline {
+  flex: 1;
+  margin: 0;
+  padding: 1rem 1.1rem 0.5rem;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.timeline-item {
+  position: relative;
+  display: flex;
+  gap: 0.8rem;
+  padding-bottom: 1.1rem;
+}
+
+.timeline-item:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  top: 26px;
+  bottom: -2px;
+  left: 12px;
+  width: 4px;
+  background: var(--line-blue);
+}
+
+.timeline-item.is-done:not(:last-child)::before {
+  background: var(--ink-faint);
+}
+
+.timeline-dot {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--line-blue);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--line-blue-dark);
+  font-family: var(--font-sign);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.timeline-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding-top: 0.2rem;
+}
+
+.timeline-title {
+  font-size: 0.95rem;
+  line-height: 1.3;
+}
+
+.timeline-meta {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.timeline-tag {
+  display: inline-block;
+  margin-left: 0.3rem;
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: var(--signal-soft);
+  color: var(--signal-ink);
+  font-size: 0.75rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.timeline-item.is-done .timeline-dot {
+  border-color: var(--ink-faint);
+  background: var(--ink-faint);
+  color: #fff;
+}
+
+.timeline-item.is-done .timeline-title {
+  color: var(--ink-soft);
+}
+
+.timeline-item.is-next .timeline-dot,
+.timeline-item.is-current .timeline-dot {
+  border-color: var(--ink);
+  background: var(--signal);
+  color: var(--ink);
+}
+
+.timeline-item.is-next .timeline-title,
+.timeline-item.is-current .timeline-title {
+  font-weight: 700;
+}
+
+.timeline-item.is-next .timeline-meta,
+.timeline-item.is-current .timeline-meta {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.timeline-item.is-mine .timeline-dot {
+  box-shadow: 0 0 0 3px var(--signal-soft), 0 0 0 5px var(--signal);
+}
+
+.timeline-empty {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+/* ---------- Marcadores do Leaflet ---------- */
+
+.map-stop {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--line-blue);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--line-blue-dark);
+  font: 700 0.85rem/1 var(--font-sign);
+  box-shadow: 0 1px 4px rgba(34, 49, 59, 0.3);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.map-stop-done {
+  border-color: #fff;
+  background: var(--ink-faint);
+  color: #fff;
+}
+
+.map-stop-next,
+.map-stop-current {
+  border-color: var(--ink);
+  background: var(--signal);
+  color: var(--ink);
+  transform: scale(1.18);
+  animation: map-pulse 1.8s ease-out infinite;
+}
+
+.map-stop-highlight {
+  box-shadow: 0 0 0 3px #fff, 0 0 0 6px var(--signal);
+}
+
+@keyframes map-pulse {
+  0% { box-shadow: 0 0 0 0 rgba(242, 183, 5, 0.6), 0 1px 4px rgba(34, 49, 59, 0.3); }
+  100% { box-shadow: 0 0 0 16px rgba(242, 183, 5, 0), 0 1px 4px rgba(34, 49, 59, 0.3); }
+}
+
+.map-place {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(34, 49, 59, 0.35);
+}
+
+.map-place svg {
+  width: 16px;
+  height: 16px;
+  fill: #fff;
+}
+
+.map-place-home { background: var(--go); }
+.map-place-college { background: #7b4bc4; }
+
+.map-bus {
+  position: relative;
+  width: 44px;
+  height: 44px;
+}
+
+.map-bus-body {
+  position: absolute;
+  inset: 5px;
+  display: grid;
+  place-items: center;
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--ink);
+  box-shadow: 0 3px 10px rgba(34, 49, 59, 0.45);
+}
+
+.map-bus-body svg {
+  width: 19px;
+  height: 19px;
+  fill: var(--signal);
+}
+
+/* Seta que gira em volta do ônibus apontando para onde ele vai. */
+.map-bus-heading {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.6s ease;
+}
+
+.map-bus-heading::before {
+  content: "";
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-top: 0;
+  border-bottom: 10px solid var(--ink);
+}
+
+.map-route-active {
+  stroke-dasharray: 14 10;
+  animation: map-route-flow 1s linear infinite;
+}
+
+@keyframes map-route-flow {
+  to { stroke-dashoffset: -24; }
+}
+
+.map-view-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.map-view-controls button {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 34px;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  font: 700 0.82rem var(--font-text);
+  box-shadow: var(--shadow-float);
+  cursor: pointer;
+}
+
+.map-view-controls button[hidden] {
+  display: none;
+}
+
+.map-view-controls button svg {
+  width: 15px;
+  height: 15px;
+  fill: currentColor;
+}
+
+.map-view-controls button.is-active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--signal);
+}
+
+/* Placa fixa ao lado de cada ônibus no mapa da frota. */
+.leaflet-tooltip.map-bus-label {
+  padding: 0.1rem 0.4rem 0;
+  border: 1.5px solid var(--ink);
+  border-top: 4px solid var(--line-blue);
+  border-radius: 4px;
+  box-shadow: none;
+  font: 700 0.8rem/1.2 var(--font-sign);
+  letter-spacing: 0.06em;
+}
+
+.leaflet-tooltip.map-bus-label::before {
+  display: none;
+}
+
+/* Aviso sobre o mapa (localização, precisão do GPS). */
+.map-status {
+  max-width: min(320px, 70vw);
+  margin-bottom: 28px !important;
+  padding: 0.45rem 0.7rem;
+  border-radius: var(--radius-sm);
+  background: var(--ink);
+  color: #fff;
+  font: 700 0.82rem/1.35 var(--font-text);
+  box-shadow: var(--shadow-float);
+}
+
+.map-status[hidden],
+.map-status:empty {
+  display: none;
+}

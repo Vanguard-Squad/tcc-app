@@ -1,0 +1,21 @@
+<% content_for :title, "Confirmar check-in" %>
+
+<main class="page page-narrow">
+  <section class="trip-hero is-live">
+    <p class="trip-hero-kicker"><%= icon(:qr, size: 18) %> QR code lido</p>
+    <h1 class="trip-hero-title">Confirmar check-in</h1>
+
+    <div class="trip-hero-vehicle">
+      <%= plate(@trip.vehicle.license_plate) %>
+      <div>
+        <strong><%= @trip.vehicle.route&.name %></strong>
+        <span>Viagem de <%= @trip.outbound? ? "ida" : "volta" %></span>
+      </div>
+    </div>
+
+    <div class="trip-hero-actions">
+      <%= button_to Checkin::STEP_LABELS.fetch(@step), students_qr_checkin_path, params: { token: params[:token] }, class: "btn btn-go btn-large btn-block", form_class: "inline-form full-width-form" %>
+      <%= link_to "Cancelar", students_trip_path, class: "btn btn-secondary btn-large btn-block" %>
+    </div>
+  </section>
+</main>

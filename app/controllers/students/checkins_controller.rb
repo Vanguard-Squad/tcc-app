@@ -12,6 +12,7 @@ module Students
 
       Checkin.today_for!(student: student, vehicle: trip.vehicle).advance!(step, trip.direction)
       trip.broadcast_state("checkin")
+      audit("checkin.registered", trip, etapa: Checkin::STEP_LABELS.fetch(step))
       redirect_to students_trip_path, notice: "#{Checkin::STEP_LABELS.fetch(step)}: registrado."
     rescue Checkin::InvalidStep => error
       redirect_to students_trip_path, alert: error.message

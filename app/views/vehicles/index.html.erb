@@ -2,33 +2,68 @@
 
 <main class="page">
   <div class="page-header">
-    <h1>Frota</h1>
-    <%= link_to "Cadastrar ônibus", new_vehicle_path, class: "btn btn-primary btn-inline" %>
+    <div>
+      <h1>Frota</h1>
+      <p class="page-subtitle">Ônibus, rota de cada um e quem dirige.</p>
+    </div>
+    <%= link_to new_vehicle_path, class: "btn btn-primary" do %><%= icon(:plus, size: 18) %> Ônibus<% end %>
   </div>
 
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th>Placa</th>
-        <th>Assentos</th>
-        <th>Rota</th>
-        <th>Situação</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <% @vehicles.each do |vehicle| %>
+  <div class="table-wrap">
+    <table class="data-table stack">
+      <thead>
         <tr>
-          <td><%= vehicle.license_plate %></td>
-          <td><%= vehicle.seats_busy %> / <%= vehicle.seats %></td>
-          <td><%= vehicle.route&.name || "Sem rota" %></td>
-          <td><%= vehicle.is_active? ? "Ativo" : "Inativo" %></td>
-          <td><%= link_to "Editar / vincular rota", edit_vehicle_path(vehicle) %></td>
+          <th>Placa</th>
+          <th>Rota</th>
+          <th>Motoristas</th>
+          <th>Lotação</th>
+          <th>Situação</th>
+          <th><span class="visually-hidden">Ações</span></th>
         </tr>
-      <% end %>
-      <% if @vehicles.empty? %>
-        <tr><td colspan="5">Nenhum ônibus cadastrado ainda.</td></tr>
-      <% end %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% @vehicles.each do |vehicle| %>
+          <% riders = vehicle.vehicle_students.map(&:student_id).uniq.size %>
+          <tr>
+            <td><%= plate(vehicle.license_plate) %></td>
+            <td data-label="Rota">
+              <% if vehicle.route %>
+                <%= vehicle.route.name %>
+              <% else %>
+                <span class="status-badge status-waiting">Sem rota</span>
+              <% end %>
+            </td>
+            <td data-label="Motoristas">
+              <%= vehicle.drivers.map { |driver| driver.user.name }.uniq.to_sentence.presence || tag.span("Ninguém na escala", class: "muted") %>
+            </td>
+            <td data-label="Lotação">
+              <div class="occupancy" title="<%= riders %> alunos para <%= vehicle.seats %> lugares">
+                <span class="numeric"><%= riders %>/<%= vehicle.seats %></span>
+                <span class="occupancy-bar"><span style="width: <%= vehicle.seats.to_i.positive? ? [ riders * 100 / vehicle.seats, 100 ].min : 0 %>%"></span></span>
+              </div>
+            </td>
+            <td>
+              <% if @live_vehicle_ids.include?(vehicle.id) %>
+                <span class="status-badge status-boarded">Em rota</span>
+              <% elsif vehicle.is_active? %>
+                <span class="status-badge status-active">Ativo</span>
+              <% else %>
+                <span class="status-badge status-inactive">Inativo</span>
+              <% end %>
+            </td>
+            <td class="cell-actions"><%= link_to "Editar", edit_vehicle_path(vehicle), class: "btn btn-secondary btn-small" %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <% if @vehicles.empty? %>
+      <div class="empty-state">
+        <%= icon(:bus, size: 36, css: "empty-icon") %>
+        <strong>Nenhum ônibus cadastrado</strong>
+        Cadastre o primeiro ônibus para montar rotas e escalas.
+        <div><%= link_to "Cadastrar ônibus", new_vehicle_path, class: "btn btn-primary" %></div>
+      </div>
+    <% end %>
+  </div>
 </main>

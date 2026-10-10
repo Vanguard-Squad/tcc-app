@@ -1,0 +1,76 @@
+<% content_for :title, "Início" %>
+
+<main class="page page-medium">
+  <div class="page-header">
+    <div>
+      <h1>Olá, <%= current_user.name.split.first %></h1>
+      <p class="page-subtitle"><%= l(Date.current, format: :weekday).capitalize %></p>
+    </div>
+  </div>
+
+  <% if @vehicle.nil? %>
+    <section class="panel empty-state">
+      <%= icon(:bus, size: 36, css: "empty-icon") %>
+      <strong>Você ainda não está em nenhum ônibus</strong>
+      A secretaria da sua empresa de transporte precisa vincular você a um ônibus.
+    </section>
+  <% else %>
+    <section class="trip-hero <%= "is-live" if @trip %>">
+      <% if @trip %>
+        <p class="trip-hero-kicker"><span class="live-dot" aria-hidden="true"></span> Viagem de <%= @trip.outbound? ? "ida" : "volta" %> em andamento</p>
+        <h2 class="trip-hero-title">Seu ônibus está a caminho</h2>
+      <% else %>
+        <p class="trip-hero-kicker">Nenhuma viagem agora</p>
+        <h2 class="trip-hero-title">Você é avisado quando o ônibus sair</h2>
+      <% end %>
+
+      <div class="trip-hero-vehicle">
+        <%= plate(@vehicle.license_plate) %>
+        <div>
+          <strong><%= @vehicle.route&.name || "Sem rota" %></strong>
+          <% if @stop %><span>Seu ponto: <%= @stop.address.label_with_city %></span><% end %>
+        </div>
+      </div>
+
+      <div class="trip-hero-actions">
+        <%= link_to students_trip_path, class: "btn btn-primary btn-large" do %><%= icon(:route) %> Acompanhar no mapa<% end %>
+        <% if @next_step %>
+          <%= button_to students_checkins_path, params: { step: @next_step }, class: "btn btn-go btn-large", form_class: "inline-form" do %>
+            <%= icon(:check) %> <%= Checkin::STEP_LABELS.fetch(@next_step) %>
+          <% end %>
+        <% end %>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">Seu dia</h2>
+      <ol class="day-line">
+        <% Checkin::STEPS.each do |step| %>
+          <% time = @checkin&.public_send(step) %>
+          <li class="<%= "is-done" if time %> <%= "is-next" if step == @next_step %>">
+            <span class="day-line-label"><%= Checkin::STEP_LABELS.fetch(step) %></span>
+            <span class="day-line-time numeric"><%= time ? l(time, format: "%H:%M") : "—" %></span>
+          </li>
+        <% end %>
+      </ol>
+    </section>
+
+    <section class="panel">
+      <h2 class="panel-title">Seu transporte</h2>
+      <dl class="facts">
+        <div>
+          <dt>Faculdade</dt>
+          <dd><%= @student.college.name %></dd>
+        </div>
+        <div>
+          <dt>Trechos</dt>
+          <dd><%= @assignments.map { |assignment| assignment.is_return? ? "Volta" : "Ida" }.uniq.sort.join(" e ").presence || "—" %></dd>
+        </div>
+        <div>
+          <dt>Ponto de embarque</dt>
+          <dd><%= @stop&.address&.label_with_city || "Endereço ainda sem localização no mapa" %></dd>
+        </div>
+      </dl>
+    </section>
+  <% end %>
+</main>

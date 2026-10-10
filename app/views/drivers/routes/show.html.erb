@@ -1,84 +1,75 @@
 <% content_for :title, "Minha rota" %>
 
-<% content_for :head do %>
-  <%= stylesheet_link_tag "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
-        integrity: "sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=", crossorigin: "" %>
-<% end %>
-
 <main class="page">
-  <div class="page-header">
-    <h1>Minha rota<%= " — #{@route.name}" if @route %></h1>
-    <% if @route %>
-      <div class="page-header-actions">
-        <%= link_to "Reordenar paradas", edit_drivers_route_path, class: "btn btn-secondary btn-inline" %>
-        <%= link_to "Ver passageiros", passengers_drivers_route_path, class: "btn btn-primary btn-inline" %>
-      </div>
-    <% end %>
-  </div>
-
   <% if @route.nil? %>
-    <p>Você ainda não tem uma rota atribuída.</p>
+    <h1>Minha rota</h1>
+    <section class="panel empty-state">
+      <%= icon(:route, size: 36, css: "empty-icon") %>
+      <strong>Você ainda não tem uma rota</strong>
+      Fale com a secretaria para receber um ônibus e uma rota.
+    </section>
   <% else %>
-    <% active_trip = current_user.driver.active_trip %>
-    <div class="stop-row">
-      <div class="stop-row-header">
-        <span class="stop-row-title">Viagem</span>
+    <%
+      active_trip = current_user.driver.active_trip
+      map_stops = route_stops_for_map(@stops, direction: active_trip&.direction)
+      bus = active_trip&.latitude ? { lat: active_trip.latitude, lng: active_trip.longitude } : {}
+    %>
+
+    <div class="page-header">
+      <div>
+        <h1><%= @route.name %></h1>
+        <p class="page-subtitle">
+          <%= plate(@vehicle.license_plate) %>
+          <% if active_trip %>
+            Viagem de <%= active_trip.outbound? ? "ida" : "volta" %> desde as <%= l(active_trip.started_at, format: "%H:%M") %>
+          <% end %>
+        </p>
       </div>
-
-      <% if active_trip %>
-        <p>Viagem de <strong><%= active_trip.outbound? ? "ida" : "volta" %></strong> em andamento.</p>
-
-        <div data-controller="trip-tracker"
-             data-trip-tracker-url-value="<%= drivers_trip_position_path %>"
-             data-trip-tracker-stops-value="<%= @stops.map { |stop| { lat: stop.address.latitude, lng: stop.address.longitude } }.to_json %>">
-          <div class="page-header-actions">
-            <button type="button" class="btn btn-primary btn-inline" data-action="trip-tracker#startGps">Enviar localização (GPS)</button>
-            <button type="button" class="btn btn-secondary btn-inline" data-action="trip-tracker#startSimulation">Simular trajeto</button>
-            <button type="button" class="btn btn-secondary btn-inline" data-action="trip-tracker#stopSending">Parar envio</button>
-          </div>
-          <p class="field-hint" data-trip-tracker-target="status">Escolha como enviar a posição do ônibus.</p>
-        </div>
-
-        <%= button_to "Finalizar viagem", drivers_trip_path, method: :delete, class: "btn btn-secondary" %>
-      <% else %>
-        <p class="field-hint">Nenhuma viagem em andamento. Ao iniciar, os alunos passam a ver o ônibus no mapa.</p>
-        <div class="page-header-actions">
-          <%= button_to "Iniciar viagem de ida", drivers_trip_path, params: { direction: "outbound" }, class: "btn btn-primary" %>
-          <%= button_to "Iniciar viagem de volta", drivers_trip_path, params: { direction: "return" }, class: "btn btn-secondary" %>
-        </div>
-      <% end %>
+      <div class="page-header-actions">
+        <%= link_to "Reordenar paradas", edit_drivers_route_path, class: "btn btn-secondary" %>
+        <%= link_to passengers_drivers_route_path, class: "btn btn-secondary" do %><%= icon(:passengers, size: 18) %> Passageiros<% end %>
+      </div>
     </div>
 
-    <div
-      id="route-map"
-      data-controller="route-map"
-      data-route-map-stops-value="<%= @stops.map { |stop| { id: stop.id, step: stop.step, label: stop.address.label_with_city, lat: stop.address.latitude, lng: stop.address.longitude } }.to_json %>"
-      style="height: 400px; margin-bottom: 1.5rem; border-radius: 8px;"
-    ></div>
+    <section class="trip-hero <%= "is-live" if active_trip %>">
+      <% if active_trip %>
+        <div class="trip-controls"
+             data-controller="trip-tracker"
+             data-trip-tracker-url-value="<%= drivers_trip_position_path %>"
+             data-trip-tracker-stops-value="<%= map_stops.to_json %>">
+          <div>
+            <p class="trip-hero-kicker"><span class="live-dot" aria-hidden="true"></span> Enviando a posição do ônibus</p>
+            <p class="field-hint" data-trip-tracker-target="status">Escolha como enviar a posição: GPS do celular ou simulação do trajeto.</p>
+          </div>
+          <div class="trip-controls-source">
+            <button type="button" class="btn btn-primary" data-action="trip-tracker#startGps"><%= icon(:pin, size: 18) %> Usar GPS</button>
+            <button type="button" class="btn btn-secondary" data-action="trip-tracker#startSimulation">Simular trajeto</button>
+            <button type="button" class="btn btn-secondary" data-action="trip-tracker#stopSending">Pausar</button>
+          </div>
+        </div>
+        <div class="trip-hero-actions trip-hero-footer">
+          <%= link_to drivers_trip_qr_code_path, class: "btn btn-secondary" do %><%= icon(:qr, size: 18) %> QR code de check-in<% end %>
+          <%= button_to "Finalizar viagem", drivers_trip_path, method: :delete, class: "btn btn-danger", form_class: "inline-form",
+                form: { data: { turbo_confirm: "Finalizar a viagem? Os alunos deixam de ver o ônibus no mapa." } } %>
+        </div>
+      <% else %>
+        <p class="trip-hero-kicker">Nenhuma viagem em andamento</p>
+        <p class="trip-hero-status">Ao iniciar, os alunos passam a ver o ônibus no mapa.</p>
+        <div class="trip-hero-actions">
+          <%= button_to "Iniciar ida", drivers_trip_path, params: { direction: "outbound" }, class: "btn btn-primary btn-large", form_class: "inline-form" %>
+          <%= button_to "Iniciar volta", drivers_trip_path, params: { direction: "return" }, class: "btn btn-secondary btn-large", form_class: "inline-form" %>
+        </div>
+      <% end %>
+    </section>
 
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Endereço</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @stops.each do |stop| %>
-          <tr>
-            <td><%= stop.step %></td>
-            <td>
-              <%= stop.address.label_with_city %>
-              <% unless stop.address.geocoded? %>
-                <span class="field-hint">(sem localização no mapa)</span>
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
-        <% if @stops.empty? %>
-          <tr><td colspan="2">Nenhuma parada cadastrada nesta rota.</td></tr>
-        <% end %>
-      </tbody>
-    </table>
+    <div class="route-tracker"
+         data-controller="route-map"
+         data-route-map-stops-value="<%= map_stops.to_json %>"
+         data-route-map-vehicle-id-value="<%= @vehicle.id %>"
+         data-route-map-trip-active-value="<%= active_trip.present? %>"
+         data-route-map-bus-value="<%= bus.to_json %>">
+      <div class="route-map" id="route-map" data-route-map-target="map"></div>
+      <%= render "shared/route_panel", stops: map_stops, trip: active_trip %>
+    </div>
   <% end %>
 </main>

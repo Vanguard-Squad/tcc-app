@@ -1,17 +1,13 @@
 <% content_for :title, "Meu ônibus" %>
 
-<% content_for :head do %>
-  <%= stylesheet_link_tag "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
-        integrity: "sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=", crossorigin: "" %>
-<% end %>
-
 <main class="page">
-  <div class="page-header">
-    <h1>Meu ônibus<%= " — #{@route.name}" if @route %></h1>
-  </div>
-
   <% if @route.nil? %>
-    <p>Você ainda não está vinculado a um ônibus com rota.</p>
+    <h1>Meu ônibus</h1>
+    <section class="panel empty-state">
+      <%= icon(:bus, size: 36, css: "empty-icon") %>
+      <strong>Você ainda não está vinculado a um ônibus com rota</strong>
+      A secretaria da sua empresa de transporte precisa vincular você a um ônibus.
+    </section>
   <% else %>
     <%
       place = ->(address) { address&.geocoded? ? { lat: address.latitude, lng: address.longitude } : {} }
@@ -20,7 +16,15 @@
       college = place.call(@student.college.address)
       bus = @trip&.latitude ? { lat: @trip.latitude, lng: @trip.longitude } : {}
       walk = @trip&.outbound? && @next_step == "boarded_initial" && home.any? && stop_place.any?
+      map_stops = route_stops_for_map(@stops, direction: @trip&.direction)
     %>
+
+    <div class="page-header">
+      <div>
+        <h1><%= @route.name %></h1>
+        <p class="page-subtitle"><%= plate(@vehicle.license_plate) %> <%= @student.college.name %></p>
+      </div>
+    </div>
 
     <div data-controller="bus-tracker"
          data-bus-tracker-vehicle-id-value="<%= @vehicle.id %>"
@@ -30,61 +34,54 @@
          data-bus-tracker-college-value="<%= college.to_json %>"
          data-bus-tracker-target-value="<%= (@target || {}).to_json %>"
          data-bus-tracker-bus-value="<%= bus.to_json %>"
-         data-bus-tracker-walk-value="<%= walk %>">
+         data-bus-tracker-walk-value="<%= walk %>"
+         data-bus-tracker-stops-value="<%= map_stops.to_json %>"
+         data-bus-tracker-my-stop-id-value="<%= @stop&.id %>">
 
-      <p class="field-hint">Ônibus <%= @vehicle.license_plate %></p>
-
-      <div class="stop-row">
-        <div class="stop-row-header">
-          <span class="stop-row-title">Meu ponto de embarque</span>
-        </div>
-        <% if @stop %>
-          <p><%= @stop.address.label_with_city %> (parada <%= @stop.step %>)</p>
-        <% else %>
-          <p class="field-hint">Não foi possível localizar seu ponto: seu endereço ou os da rota ainda não têm localização no mapa.</p>
-        <% end %>
-        <p class="field-hint">Faculdade: <%= @student.college.name %></p>
-        <p class="field-hint" data-bus-tracker-target="status"></p>
-      </div>
-
-      <div class="stop-row">
-        <div class="stop-row-header">
-          <span class="stop-row-title">Viagem</span>
-        </div>
-
+      <section class="trip-hero <%= "is-live" if @trip %>">
         <% if @trip %>
-          <p>Viagem de <strong><%= @trip.outbound? ? "ida" : "volta" %></strong> em andamento.</p>
+          <p class="trip-hero-kicker"><span class="live-dot" aria-hidden="true"></span> Viagem de <%= @trip.outbound? ? "ida" : "volta" %> em andamento</p>
 
           <% if @target %>
-            <p>
-              <%= @target[:kind] == :stop ? "O ônibus chega ao seu ponto em" : "O ônibus chega à faculdade em" %>
-              <strong data-bus-tracker-target="eta">aguardando localização do ônibus…</strong>
+            <p class="eta-callout">
+              <span><%= @target[:kind] == :stop ? "Chega no seu ponto em" : "Chega à faculdade em" %></span>
+              <strong data-bus-tracker-target="eta">…</strong>
             </p>
           <% end %>
 
           <% if @next_step %>
-            <%= button_to Checkin::STEP_LABELS.fetch(@next_step), students_checkins_path, params: { step: @next_step }, class: "btn btn-primary" %>
+            <%= button_to Checkin::STEP_LABELS.fetch(@next_step), students_checkins_path, params: { step: @next_step }, class: "btn btn-go btn-large", form_class: "inline-form" %>
+            <p class="checkin-hint">Ou aponte a câmera do celular para o QR code mostrado pelo motorista.</p>
           <% else %>
-            <p class="field-hint">Todas as etapas desta viagem foram registradas.</p>
+            <p class="all-clear"><%= icon(:check, size: 18) %> Todas as etapas desta viagem foram registradas.</p>
           <% end %>
         <% else %>
-          <p class="field-hint">Nenhuma viagem em andamento. Esta tela atualiza sozinha quando o motorista iniciar.</p>
+          <p class="trip-hero-kicker">Nenhuma viagem em andamento</p>
+          <p class="trip-hero-status">Esta tela atualiza sozinha quando o motorista sair.</p>
         <% end %>
+
+        <p class="field-hint" data-bus-tracker-target="status">
+          <% unless @stop %>Não foi possível achar seu ponto: seu endereço ou os da rota ainda não têm localização no mapa.<% end %>
+        </p>
+      </section>
+
+      <div class="route-tracker">
+        <div class="route-map" id="student-map" data-bus-tracker-target="map"></div>
+        <%= render "shared/route_panel", stops: map_stops, trip: @trip, highlight_stop_id: @stop&.id, mine: true %>
       </div>
 
-      <div class="stop-row">
-        <div class="stop-row-header">
-          <span class="stop-row-title">Registros de hoje</span>
-        </div>
-        <ul>
+      <section class="panel">
+        <h2 class="panel-title">Seus registros de hoje</h2>
+        <ol class="day-line">
           <% Checkin::STEPS.each do |step| %>
             <% time = @checkin&.public_send(step) %>
-            <li><%= Checkin::STEP_LABELS.fetch(step) %>: <%= time ? l(time, format: "%H:%M") : "—" %></li>
+            <li class="<%= "is-done" if time %> <%= "is-next" if step == @next_step %>">
+              <span class="day-line-label"><%= Checkin::STEP_LABELS.fetch(step) %></span>
+              <span class="day-line-time numeric"><%= time ? l(time, format: "%H:%M") : "—" %></span>
+            </li>
           <% end %>
-        </ul>
-      </div>
-
-      <div data-bus-tracker-target="map" id="student-map" style="height: 420px; border-radius: 8px;"></div>
+        </ol>
+      </section>
     </div>
   <% end %>
 </main>

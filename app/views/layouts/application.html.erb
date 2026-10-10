@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
   <head>
-    <title><%= content_for(:title) || "Tcc App" %></title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title><%= [ content_for(:title), current_company&.name || "Tcc App" ].compact.join(" | ") %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#1F5FBF">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Tcc App">
     <meta name="mobile-web-app-capable" content="yes">
@@ -10,16 +11,19 @@
     <%= csp_meta_tag %>
     <%= action_cable_meta_tag %>
 
-    <%= yield :head %>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap">
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+
+    <%= yield :head %>
 
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
@@ -30,23 +34,25 @@
         <%= render "shared/sidebar" %>
 
         <div class="app-content">
-          <% if notice.present? %>
-            <p class="flash flash-notice"><%= notice %></p>
-          <% end %>
-          <% if alert.present? %>
-            <p class="flash flash-alert"><%= alert %></p>
-          <% end %>
+          <header class="topbar">
+            <div class="topbar-brand">
+              <span class="brand-mark" aria-hidden="true"></span>
+              <span><%= current_company.name %></span>
+            </div>
+            <%= button_to logout_path, method: :delete, class: "topbar-logout", form_class: "topbar-logout-form", "aria-label": "Sair" do %>
+              <%= icon(:logout) %>
+            <% end %>
+          </header>
+
+          <%= render "shared/flash" %>
 
           <%= yield %>
         </div>
+
+        <%= render "shared/tabbar" %>
       </div>
     <% else %>
-      <% if notice.present? %>
-        <p class="flash flash-notice"><%= notice %></p>
-      <% end %>
-      <% if alert.present? %>
-        <p class="flash flash-alert"><%= alert %></p>
-      <% end %>
+      <%= render "shared/flash" %>
 
       <%= yield %>
     <% end %>

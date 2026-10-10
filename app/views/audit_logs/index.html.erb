@@ -1,0 +1,82 @@
+<% content_for :title, "Auditoria" %>
+
+<main class="page">
+  <div class="page-header">
+    <div>
+      <h1>Auditoria</h1>
+      <p class="page-subtitle">Quem fez o quê no sistema, e quando.</p>
+    </div>
+  </div>
+
+  <%= form_with url: audit_logs_path, method: :get, local: true, class: "filter-bar" do |form| %>
+    <div class="field">
+      <%= form.label :user_id, "Usuário" %>
+      <%= form.select :user_id, options_for_select(@users.map { |user| [ user.name, user.id.to_s ] }, params[:user_id]), include_blank: "Todos" %>
+    </div>
+    <div class="field">
+      <%= form.label :category, "Tipo" %>
+      <%= form.select :category, options_for_select(AuditLogsHelper::CATEGORY_LABELS.invert, params[:category]), include_blank: "Todos" %>
+    </div>
+    <div class="field">
+      <%= form.label :from, "De" %>
+      <%= form.date_field :from, value: params[:from] %>
+    </div>
+    <div class="field">
+      <%= form.label :to, "Até" %>
+      <%= form.date_field :to, value: params[:to] %>
+    </div>
+    <div class="page-header-actions">
+      <%= form.submit "Filtrar", class: "btn btn-primary", name: nil %>
+      <%= link_to "Limpar", audit_logs_path, class: "btn btn-secondary" %>
+    </div>
+  <% end %>
+
+  <div class="table-wrap">
+  <table class="data-table stack">
+    <thead>
+      <tr>
+        <th>Data/hora</th>
+        <th>Usuário</th>
+        <th>Ação</th>
+        <th>Registro</th>
+        <th>Detalhes</th>
+        <th>IP</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @logs.each do |log| %>
+        <tr>
+          <td class="numeric"><%= l(log.created_at, format: "%d/%m/%Y %H:%M:%S") %></td>
+          <td>
+            <div class="cell-main">
+              <%= avatar(log.user, size: :sm) %>
+              <div><strong><%= log.user.name %></strong><span class="cell-sub"><%= role_label(log.user.role) %></span></div>
+            </div>
+          </td>
+          <td><%= log.action_label %></td>
+          <td><%= audit_target_label(log) %></td>
+          <td>
+            <% audit_details(log).each do |line| %>
+              <div class="field-hint"><%= line %></div>
+            <% end %>
+          </td>
+          <td data-label="IP" class="cell-sub"><%= log.ip_address %></td>
+        </tr>
+      <% end %>
+      <% if @logs.empty? %>
+        <tr><td colspan="6">Nenhum registro encontrado.</td></tr>
+      <% end %>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="page-header-actions pagination">
+    <% filters = request.query_parameters.except("page") %>
+    <% if @page > 1 %>
+      <%= link_to "← Anteriores", audit_logs_path(filters.merge(page: @page - 1)), class: "btn btn-secondary btn-inline" %>
+    <% end %>
+    <% if @next_page %>
+      <%= link_to "Mais antigos →", audit_logs_path(filters.merge(page: @page + 1)), class: "btn btn-secondary btn-inline" %>
+    <% end %>
+  </div>
+</main>

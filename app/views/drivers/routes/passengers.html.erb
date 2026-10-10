@@ -1,57 +1,78 @@
-<% content_for :title, "Meus passageiros" %>
+<% content_for :title, "Passageiros" %>
 
-<main class="page" <% if @grouping %>data-controller="live-refresh" data-live-refresh-vehicle-id-value="<%= @vehicle.id %>"<% end %>>
+<main class="page page-medium" <% if @grouping %>data-controller="live-refresh" data-live-refresh-vehicle-id-value="<%= @vehicle.id %>"<% end %>>
   <div class="page-header">
-    <h1>Meus passageiros</h1>
-    <%= link_to "Voltar para a rota", drivers_route_path, class: "btn btn-secondary btn-inline" %>
+    <div>
+      <h1>Passageiros</h1>
+      <% if @grouping %><p class="page-subtitle">Agrupados pelo ponto mais perto de casa. A lista atualiza sozinha a cada check-in.</p><% end %>
+    </div>
   </div>
 
   <% if @grouping.nil? %>
-    <p>Você ainda não tem uma rota atribuída.</p>
+    <section class="panel empty-state">
+      <%= icon(:passengers, size: 36, css: "empty-icon") %>
+      <strong>Você ainda não tem uma rota</strong>
+      Os passageiros aparecem aqui quando você receber um ônibus com rota.
+    </section>
   <% else %>
-    <% [ [ "Ida (embarque na parada, desembarque na faculdade)", "outbound", @grouping.outbound ],
-         [ "Volta (embarque na faculdade, desembarque na parada)", "return", @grouping.return_leg ] ].each do |title, direction, leg| %>
+    <% [ [ "Ida", "Embarque no ponto, desembarque na faculdade", "outbound", @grouping.outbound ],
+         [ "Volta", "Embarque na faculdade, desembarque no ponto", "return", @grouping.return_leg ] ].each do |title, subtitle, direction, leg| %>
       <% trip_here = @active_trip&.direction == direction %>
-      <h2><%= title %></h2>
+      <section class="panel <%= "panel-live" if trip_here %>">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title"><%= title %></h2>
+            <span class="cell-sub"><%= subtitle %></span>
+          </div>
+          <% if trip_here %><span class="status-badge status-boarded">Em andamento</span><% end %>
+        </div>
 
-      <% if trip_here %>
-        <% boarded, total = @grouping.boarding_counts(direction) %>
-        <p class="trip-summary">Viagem em andamento: <strong><%= boarded %> de <%= total %></strong> já embarcaram.</p>
-      <% end %>
+        <% if trip_here %>
+          <% boarded, total = @grouping.boarding_counts(direction) %>
+          <p class="trip-summary">Viagem em andamento: <strong class="numeric"><%= boarded %> de <%= total %></strong> já embarcaram.</p>
+          <div class="progress"><div class="progress-bar" style="width: <%= total.positive? ? boarded * 100 / total : 0 %>%"></div></div>
+        <% end %>
 
-      <% if leg[:grouped].empty? && leg[:unmatched].empty? %>
-        <p class="field-hint">Nenhum passageiro neste trecho.</p>
-      <% else %>
-        <% leg[:grouped].each do |stop, entries| %>
-          <div class="stop-row">
-            <div class="stop-row-header">
-              <span class="stop-row-title"><%= stop.step %>. <%= stop.address.label_with_city %></span>
-            </div>
-            <ul>
-              <% entries.each do |entry| %>
+        <% if leg[:grouped].empty? && leg[:unmatched].empty? %>
+          <p class="muted">Nenhum passageiro neste trecho.</p>
+        <% else %>
+          <ol class="timeline timeline-static passenger-stops">
+            <% leg[:grouped].each do |stop, entries| %>
+              <li class="timeline-item">
+                <span class="timeline-dot"><%= stop.step %></span>
+                <div class="timeline-body passenger-group">
+                  <span class="timeline-title"><strong><%= stop.address.label_with_city %></strong></span>
+                  <ul class="passenger-list">
+                    <% entries.each do |entry| %>
+                      <li>
+                        <%= avatar(entry.student.user, size: :sm) %>
+                        <div>
+                          <strong><%= entry.student.user.name %></strong>
+                          <span class="cell-sub"><%= entry.student.college.name %></span>
+                        </div>
+                        <%= render "passenger_status", checkin: @grouping.checkin_for(entry.student), direction: direction, trip_here: trip_here %>
+                      </li>
+                    <% end %>
+                  </ul>
+                </div>
+              </li>
+            <% end %>
+          </ol>
+
+          <% if leg[:unmatched].any? %>
+            <h3 class="unmatched-title"><%= icon(:alert, size: 18) %> Sem parada definida (endereço não localizado)</h3>
+            <ul class="passenger-list">
+              <% leg[:unmatched].each do |student| %>
                 <li>
-                  <%= entry.student.user.name %> — <%= entry.student.college.name %>
-                  <%= render "passenger_status", checkin: @grouping.checkin_for(entry.student), direction: direction, trip_here: trip_here %>
+                  <%= avatar(student.user, size: :sm) %>
+                  <div><strong><%= student.user.name %></strong></div>
+                  <%= render "passenger_status", checkin: @grouping.checkin_for(student), direction: direction, trip_here: trip_here %>
                 </li>
               <% end %>
             </ul>
-          </div>
+          <% end %>
         <% end %>
-
-        <% if leg[:unmatched].any? %>
-          <p class="field-hint">
-            Sem parada definida (endereço não localizado):
-          </p>
-          <ul>
-            <% leg[:unmatched].each do |student| %>
-              <li>
-                <%= student.user.name %>
-                <%= render "passenger_status", checkin: @grouping.checkin_for(student), direction: direction, trip_here: trip_here %>
-              </li>
-            <% end %>
-          </ul>
-        <% end %>
-      <% end %>
+      </section>
     <% end %>
   <% end %>
 </main>

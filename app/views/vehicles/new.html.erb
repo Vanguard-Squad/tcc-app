@@ -1,7 +1,10 @@
 <% content_for :title, "Cadastrar ônibus" %>
 
 <main class="page page-narrow">
+  <%= back_link "Frota", vehicles_path %>
   <h1>Cadastrar ônibus</h1>
 
-  <%= render "form", vehicle: @vehicle, routes: @routes, url: vehicles_path, submit_label: "Cadastrar" %>
+  <section class="panel">
+    <%= render "form", vehicle: @vehicle, routes: @routes, url: vehicles_path, submit_label: "Cadastrar ônibus" %>
+  </section>
 </main>

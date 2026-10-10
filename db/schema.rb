@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_25_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_10_09_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -89,9 +89,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_25_190000) do
 
   create_table "logs", force: :cascade do |t|
     t.string "action"
+    t.bigint "auditable_id"
+    t.string "auditable_type"
+    t.bigint "company_id"
     t.datetime "created_at", null: false
+    t.jsonb "details", default: {}, null: false
+    t.string "ip_address"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["auditable_type", "auditable_id"], name: "index_logs_on_auditable"
+    t.index ["company_id", "created_at"], name: "index_logs_on_company_id_and_created_at"
+    t.index ["company_id"], name: "index_logs_on_company_id"
     t.index ["user_id"], name: "index_logs_on_user_id"
   end
 
@@ -202,6 +210,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_25_190000) do
   add_foreign_key "companies", "addresses"
   add_foreign_key "companies", "users"
   add_foreign_key "drivers", "users"
+  add_foreign_key "logs", "companies"
   add_foreign_key "logs", "users"
   add_foreign_key "routes", "companies"
   add_foreign_key "stops", "addresses"

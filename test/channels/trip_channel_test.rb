@@ -40,10 +40,14 @@ class TripChannelTest < ActionCable::Channel::TestCase
     assert subscription.rejected?
   end
 
-  test "managers cannot subscribe" do
+  test "managers follow their own company's fleet, but not other companies'" do
     stub_connection current_user: create_manager!(company: @company)
     subscribe vehicle_id: @vehicle.id
+    assert subscription.confirmed?
 
+    _other_owner, other_company = create_company_with_owner!
+    stub_connection current_user: create_manager!(company: other_company)
+    subscribe vehicle_id: @vehicle.id
     assert subscription.rejected?
   end
 end

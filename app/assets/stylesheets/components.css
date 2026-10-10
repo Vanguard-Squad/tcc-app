@@ -1,0 +1,481 @@
+/* ---------- Painéis ---------- */
+
+/* Bloco de conteúdo. Não há sombra: a hierarquia vem da borda e do espaço. */
+.panel,
+.stop-row {
+  margin-bottom: 1.25rem;
+  padding: 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.panel-header,
+.stop-row-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.9rem;
+}
+
+.panel-title,
+.stop-row-title {
+  margin: 0;
+  font-family: var(--font-sign);
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.panel-flush {
+  padding: 0;
+  overflow: hidden;
+}
+
+.panel-flush > .panel-header {
+  margin: 0;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--rule-soft);
+}
+
+.trip-summary {
+  margin: 0 0 0.75rem;
+}
+
+/* ---------- Tabelas ---------- */
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--surface);
+}
+
+.table-wrap > .data-table {
+  border: 0;
+}
+
+:not(.table-wrap) > .data-table {
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.data-table th,
+.data-table td {
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid var(--rule-soft);
+  text-align: left;
+  vertical-align: middle;
+  font-size: 0.95rem;
+}
+
+.data-table th {
+  padding-top: 0.65rem;
+  padding-bottom: 0.65rem;
+  background: var(--surface);
+  border-bottom-color: var(--rule);
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.data-table tbody tr:hover td {
+  background: #f7f9fa;
+}
+
+.data-table .cell-actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.cell-actions .btn + .btn,
+.cell-actions .btn + form,
+.cell-actions form + form {
+  margin-left: 0.35rem;
+}
+
+.cell-main {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.cell-main strong {
+  display: block;
+  font-weight: 700;
+}
+
+.cell-sub {
+  display: block;
+  color: var(--ink-soft);
+  font-size: 0.85rem;
+}
+
+.empty-state {
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  color: var(--ink-soft);
+}
+
+.empty-state strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: var(--ink);
+  font-size: 1.05rem;
+}
+
+.empty-state .btn {
+  margin-top: 1rem;
+}
+
+/* Em telas estreitas a tabela vira lista: cada linha é um bloco. */
+@media (max-width: 720px) {
+  .data-table.stack thead {
+    display: none;
+  }
+
+  .data-table.stack,
+  .data-table.stack tbody,
+  .data-table.stack tr,
+  .data-table.stack td {
+    display: block;
+    width: 100%;
+  }
+
+  .data-table.stack tr {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+
+  .data-table.stack td {
+    padding: 0.15rem 0;
+    border: 0;
+  }
+
+  .data-table.stack td[data-label]::before {
+    content: attr(data-label) ": ";
+    color: var(--ink-soft);
+    font-size: 0.85rem;
+  }
+
+  .data-table.stack .cell-actions {
+    padding-top: 0.6rem;
+    text-align: left;
+  }
+}
+
+/* ---------- Filtros e abas de segmento ---------- */
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.segmented {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  border-radius: var(--radius);
+  background: var(--rule-soft);
+}
+
+.segmented a {
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-sm);
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.segmented a:hover {
+  color: var(--ink);
+}
+
+.segmented a.is-active {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgba(34, 49, 59, 0.12);
+}
+
+.segmented .count {
+  margin-left: 0.25rem;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.search-field {
+  position: relative;
+  flex: 0 1 280px;
+}
+
+.search-field .icon {
+  position: absolute;
+  top: 50%;
+  left: 0.7rem;
+  color: var(--ink-faint);
+  transform: translateY(-50%);
+}
+
+.search-field input {
+  width: 100%;
+  min-height: 40px;
+  padding: 0.45rem 0.75rem 0.45rem 2.2rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  font: inherit;
+  background: var(--surface);
+}
+
+.search-field input:focus {
+  outline: none;
+  border-color: var(--line-blue);
+  box-shadow: var(--focus);
+}
+
+.filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.filter-bar .field {
+  flex: 1 1 160px;
+  margin: 0;
+}
+
+.pagination {
+  margin-top: 1rem;
+}
+
+/* ---------- Status ---------- */
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.status-badge::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.status-waiting { background: var(--signal-soft); color: var(--signal-ink); }
+.status-boarded { background: var(--line-blue-soft); color: var(--line-blue-dark); }
+.status-done,
+.status-active { background: var(--go-soft); color: var(--go); }
+.status-none { background: var(--rule-soft); color: var(--ink-soft); font-weight: 400; }
+.status-inactive { background: var(--stop-soft); color: var(--stop); }
+
+/* Ponto pulsante de "ao vivo". */
+.live-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--go);
+  box-shadow: 0 0 0 0 rgba(30, 142, 90, 0.5);
+  animation: live-pulse 1.8s ease-out infinite;
+}
+
+@keyframes live-pulse {
+  to { box-shadow: 0 0 0 8px rgba(30, 142, 90, 0); }
+}
+
+/* ---------- Placa Mercosul ---------- */
+
+.plate {
+  display: inline-block;
+  padding: 0.3rem 0.5rem 0.1rem;
+  border: 1.5px solid var(--ink);
+  border-top-width: 5px;
+  border-top-color: var(--line-blue);
+  border-radius: 4px;
+  background: #fff;
+  color: var(--ink);
+  font-family: var(--font-sign);
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+/* ---------- Avatar ---------- */
+
+.avatar {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  border-radius: 50%;
+  font-family: var(--font-sign);
+  font-weight: 700;
+}
+
+.avatar-md { width: 38px; height: 38px; font-size: 0.95rem; }
+.avatar-sm { width: 32px; height: 32px; font-size: 0.85rem; }
+
+.avatar-owner { background: var(--ink); color: #fff; }
+.avatar-manager { background: var(--signal-soft); color: var(--signal-ink); }
+.avatar-driver { background: var(--line-blue-soft); color: var(--line-blue-dark); }
+.avatar-student { background: var(--go-soft); color: var(--go); }
+
+/* ---------- Mini diagrama de linha (rotas) ---------- */
+
+.line-diagram {
+  display: flex;
+  align-items: center;
+  max-width: 100%;
+  margin: 0.4rem 0 0.25rem;
+  list-style: none;
+  padding: 0;
+}
+
+.line-diagram li {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 10px;
+  max-width: 64px;
+  height: 14px;
+}
+
+.line-diagram li::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--line-blue);
+}
+
+.line-diagram li:first-child::before { left: 50%; }
+.line-diagram li:last-child::before { right: 50%; }
+.line-diagram li:only-child::before { display: none; }
+
+.line-diagram li::after {
+  content: "";
+  position: absolute;
+  top: 1px;
+  left: 50%;
+  width: 12px;
+  height: 12px;
+  border: 3px solid var(--line-blue);
+  border-radius: 50%;
+  background: #fff;
+  transform: translateX(-50%);
+}
+
+.line-diagram li.is-done::before { background: var(--ink-faint); }
+.line-diagram li.is-done::after { border-color: var(--ink-faint); background: var(--ink-faint); }
+.line-diagram li.is-next::after { border-color: var(--ink); background: var(--signal); }
+
+/* ---------- Diversos ---------- */
+
+.inline-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+}
+
+.inline-list li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.qr-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  text-align: center;
+}
+
+.qr-code {
+  width: min(340px, 78vw);
+  aspect-ratio: 1;
+}
+
+.qr-code svg {
+  width: 100%;
+  height: 100%;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Blocos repetidos dentro de um formulário (ex.: paradas da rota). */
+.panel .stop-row {
+  background: var(--concrete);
+  border-color: var(--rule-soft);
+}
+
+.panel h2:first-child {
+  margin-top: 0;
+}
+
+.form-section {
+  margin: 1.75rem 0 0.9rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule-soft);
+  font-size: 1.15rem;
+}
+
+.form-section-first {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.form-section-hint {
+  margin: -0.6rem 0 0.9rem;
+}
