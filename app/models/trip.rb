@@ -1,4 +1,7 @@
 class Trip < ApplicationRecord
+  # Validade de cada QR code de check-in; a tela do motorista troca o código antes disso.
+  QR_CHECKIN_TTL = 2.minutes
+
   belongs_to :vehicle
   belongs_to :driver
 
@@ -13,9 +16,19 @@ class Trip < ApplicationRecord
     "vehicle:#{vehicle_id}:trip"
   end
 
-  def update_position!(latitude, longitude)
+  def self.find_by_qr_checkin_token(token)
+    find_signed(token.to_s, purpose: :qr_checkin)
+  end
+
+  def qr_checkin_token
+    signed_id(purpose: :qr_checkin, expires_in: QR_CHECKIN_TTL)
+  end
+
+  # A precisão (raio em metros informado pelo GPS) só vai para quem está
+  # acompanhando ao vivo; não é guardada.
+  def update_position!(latitude, longitude, accuracy: nil)
     update!(latitude: latitude, longitude: longitude, position_at: Time.current)
-    broadcast_state("position")
+    broadcast_state("position", accuracy: accuracy)
   end
 
   def finish!
@@ -23,8 +36,8 @@ class Trip < ApplicationRecord
     broadcast_state("finished")
   end
 
-  def broadcast_state(event)
-    ActionCable.server.broadcast(self.class.stream_name_for(vehicle_id), state.merge(event: event))
+  def broadcast_state(event, **extra)
+    ActionCable.server.broadcast(self.class.stream_name_for(vehicle_id), state.merge(event: event, **extra.compact))
   end
 
   def state

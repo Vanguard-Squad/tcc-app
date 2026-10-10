@@ -1,0 +1,74 @@
+<%# Na edição só é possível trocar por uma faculdade já cadastrada. %>
+<% editing = user.persisted? %>
+
+<%= render "shared/form_errors", object: user %>
+
+<%= form_with model: user, url: url, method: editing ? :patch : :post, local: true, class: "auth-form" do |form| %>
+  <%= render "members/account_fields", form: form %>
+
+  <%= form.fields_for :student do |student_form| %>
+    <h3 class="form-section">Dados do aluno</h3>
+    <div class="field">
+      <%= student_form.label :cpf, "CPF" %>
+      <%= student_form.text_field :cpf, required: true %>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <%= student_form.label :birthdate, "Data de nascimento" %>
+        <%= student_form.date_field :birthdate, required: true %>
+      </div>
+
+      <div class="field">
+        <%= student_form.label :gender, "Gênero" %>
+        <%= student_form.text_field :gender %>
+      </div>
+    </div>
+
+    <% if editing %>
+      <div class="field">
+        <%= student_form.label :college_id, "Faculdade" %>
+        <%= student_form.select :college_id, options_for_select(colleges, student_form.object.college_id), {}, required: true %>
+      </div>
+    <% else %>
+      <div class="field" data-controller="toggle-fields">
+        <%= student_form.label :college_id, "Faculdade" %>
+
+        <div data-toggle-fields-target="existing">
+          <%= student_form.select :college_id, options_for_select(colleges), { prompt: "Selecione" } %>
+          <p class="field-hint">
+            Não encontrou a faculdade?
+            <button type="button" data-action="toggle-fields#showNew" class="link-button">Cadastrar nova faculdade</button>
+          </p>
+        </div>
+
+        <fieldset data-toggle-fields-target="new" hidden class="nested-fieldset">
+          <legend>Nova faculdade</legend>
+
+          <%= student_form.fields_for :college do |college_form| %>
+            <div class="field">
+              <%= college_form.label :name, "Nome da faculdade" %>
+              <%= college_form.text_field :name, required: true %>
+            </div>
+
+            <%= college_form.fields_for :address do |college_address_form| %>
+              <%= render "members/address_fields", form: college_address_form %>
+            <% end %>
+          <% end %>
+
+          <p class="field-hint">
+            <button type="button" data-action="toggle-fields#showExisting" class="link-button">Selecionar faculdade existente</button>
+          </p>
+        </fieldset>
+      </div>
+    <% end %>
+
+    <h3 class="form-section">Endereço de casa</h3>
+    <p class="field-hint form-section-hint">Usado para achar o ponto de embarque mais perto.</p>
+    <%= student_form.fields_for :address do |address_form| %>
+      <%= render "members/address_fields", form: address_form %>
+    <% end %>
+  <% end %>
+
+  <%= form.submit submit_label, class: "btn btn-primary" %>
+<% end %>

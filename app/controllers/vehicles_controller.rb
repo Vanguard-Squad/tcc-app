@@ -5,7 +5,8 @@ class VehiclesController < ApplicationController
   before_action :load_routes, only: %i[new create edit update]
 
   def index
-    @vehicles = current_company.vehicles.includes(:route).order(:license_plate)
+    @vehicles = current_company.vehicles.includes(:route, :vehicle_students, drivers: :user).order(:license_plate)
+    @live_vehicle_ids = Trip.active.where(vehicle: @vehicles).pluck(:vehicle_id).to_set
   end
 
   def new
@@ -16,6 +17,7 @@ class VehiclesController < ApplicationController
     @vehicle = current_company.vehicles.new(vehicle_params)
 
     if @vehicle.save
+      audit("vehicle.created", @vehicle)
       redirect_to vehicles_path, notice: "Ônibus cadastrado com sucesso."
     else
       render :new, status: :unprocessable_entity
@@ -27,6 +29,7 @@ class VehiclesController < ApplicationController
 
   def update
     if @vehicle.update(vehicle_params)
+      audit("vehicle.updated", @vehicle, **Log.changes_of(@vehicle))
       redirect_to vehicles_path, notice: "Ônibus atualizado com sucesso."
     else
       render :edit, status: :unprocessable_entity

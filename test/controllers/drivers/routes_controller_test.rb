@@ -136,7 +136,7 @@ module Drivers
       get passengers_drivers_route_url
 
       assert_response :success
-      outbound_section, return_section = response.body.split("Volta (embarque na faculdade, desembarque na parada)", 2)
+      outbound_section, return_section = response.body.split("Embarque na faculdade, desembarque no ponto", 2)
 
       assert_includes outbound_section, student_user.name
       assert_includes outbound_section, near_stop.address.label_with_city

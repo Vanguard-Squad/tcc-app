@@ -25,6 +25,19 @@ class User < ApplicationRecord
   }, allow_nil: true
   validates :role, presence: true
 
+  # Papéis que este usuário pode editar e desativar dentro da empresa.
+  def manageable_roles
+    case role
+    when "owner" then %w[manager driver student]
+    when "manager" then %w[driver student]
+    else []
+    end
+  end
+
+  def can_manage?(member)
+    member != self && member.company_id == company_id && manageable_roles.include?(member.role)
+  end
+
   def registration_complete?
     company_id.present?
   end

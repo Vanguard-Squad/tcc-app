@@ -9,7 +9,8 @@ class TripChannel < ApplicationCable::Channel
   private
     def authorized?(vehicle)
       user = current_user
-      (user.driver? && user.driver.present? && vehicle.vehicle_drivers.exists?(driver: user.driver)) ||
+      ((user.owner? || user.manager?) && vehicle.company_id == user.company_id) ||
+        (user.driver? && user.driver.present? && vehicle.vehicle_drivers.exists?(driver: user.driver)) ||
         (user.student? && user.student.present? && vehicle.vehicle_students.exists?(student: user.student))
     end
 end

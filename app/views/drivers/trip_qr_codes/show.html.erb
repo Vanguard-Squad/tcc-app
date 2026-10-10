@@ -1,0 +1,22 @@
+<% content_for :title, "QR code de check-in" %>
+
+<main class="page page-narrow" data-controller="live-refresh" data-live-refresh-vehicle-id-value="<%= @trip.vehicle_id %>">
+  <%= back_link "Minha rota", drivers_route_path %>
+
+  <div class="qr-panel" data-controller="qr-code"
+       data-qr-code-text-value="<%= @checkin_url %>"
+       data-qr-code-refresh-seconds-value="<%= Drivers::TripQrCodesController::REFRESH_SECONDS %>">
+    <h1>Check-in por QR code</h1>
+    <p class="muted">
+      <%= plate(@trip.vehicle.license_plate) %>
+      Viagem de <%= @trip.outbound? ? "ida" : "volta" %>
+    </p>
+
+    <div class="qr-code" data-qr-code-target="code" role="img" aria-label="QR code de check-in"></div>
+
+    <p>O aluno aponta a câmera do celular e confirma o embarque ou o desembarque.</p>
+    <p class="field-hint">Um código novo é gerado em <strong class="numeric" data-qr-code-target="countdown"></strong> segundos.</p>
+  </div>
+
+  <p class="center-link"><%= link_to "Ver quem já fez check-in", passengers_drivers_route_path %></p>
+</main>

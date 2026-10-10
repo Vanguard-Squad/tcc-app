@@ -1,34 +1,10 @@
 <% content_for :title, "Cadastrar secretaria" %>
 
 <main class="page page-narrow">
+  <%= back_link "Membros", members_path %>
   <h1>Cadastrar secretaria</h1>
 
-  <%= render "shared/form_errors", object: @user %>
-
-  <%= form_with model: @user, url: member_managers_path, local: true, class: "auth-form" do |form| %>
-    <div class="field">
-      <%= form.label :name, "Nome" %>
-      <%= form.text_field :name, required: true, autofocus: true %>
-    </div>
-
-    <div class="field">
-      <%= form.label :email, "E-mail" %>
-      <%= form.email_field :email, required: true %>
-    </div>
-
-    <div class="field">
-      <%= form.label :password, "Senha" %>
-      <%= form.password_field :password, required: true, minlength: 8,
-            pattern: "(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9\\s]).{8,}",
-            title: "Mínimo de 8 caracteres, com letra maiúscula, minúscula e caractere especial" %>
-      <p class="field-hint">Mínimo de 8 caracteres, com letra maiúscula, minúscula e caractere especial.</p>
-    </div>
-
-    <div class="field">
-      <%= form.label :password_confirmation, "Confirmar senha" %>
-      <%= form.password_field :password_confirmation, required: true, minlength: 8 %>
-    </div>
-
-    <%= form.submit "Cadastrar", class: "btn btn-primary" %>
-  <% end %>
+  <section class="panel">
+    <%= render "form", user: @user, url: member_managers_path, submit_label: "Cadastrar secretaria" %>
+  </section>
 </main>

@@ -1,42 +1,49 @@
 <% content_for :title, "Criar conta" %>
 
 <main class="auth-page">
-  <div class="auth-card">
-    <p class="wizard-step">Etapa 1 de 2 &middot; Sua conta</p>
-    <h1>Criar conta</h1>
+  <%= render "shared/auth_art" %>
 
-    <%= render "shared/form_errors", object: @user %>
+  <div class="auth-main">
+    <div class="auth-card">
+      <p class="wizard-step">
+        <span class="wizard-line" aria-hidden="true"><i class="is-current"></i><b></b><i></i></span>
+        Etapa 1 de 2: sua conta
+      </p>
+      <h1>Criar conta</h1>
 
-    <%= form_with model: @user, url: registrations_path, local: true, class: "auth-form" do |form| %>
-      <div class="field">
-        <%= form.label :name, "Nome" %>
-        <%= form.text_field :name, required: true, autofocus: true %>
-      </div>
+      <%= render "shared/form_errors", object: @user %>
 
-      <div class="field">
-        <%= form.label :email, "E-mail" %>
-        <%= form.email_field :email, required: true %>
-      </div>
+      <%= form_with model: @user, url: registrations_path, local: true, class: "auth-form" do |form| %>
+        <div class="field">
+          <%= form.label :name, "Nome" %>
+          <%= form.text_field :name, required: true, autofocus: true %>
+        </div>
 
-      <div class="field">
-        <%= form.label :password, "Senha" %>
-        <%= form.password_field :password, required: true, minlength: 8,
-              pattern: "(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9\\s]).{8,}",
-              title: "Mínimo de 8 caracteres, com letra maiúscula, minúscula e caractere especial" %>
-        <p class="field-hint">Mínimo de 8 caracteres, com letra maiúscula, minúscula e caractere especial.</p>
-      </div>
+        <div class="field">
+          <%= form.label :email, "E-mail" %>
+          <%= form.email_field :email, required: true %>
+        </div>
 
-      <div class="field">
-        <%= form.label :password_confirmation, "Confirmar senha" %>
-        <%= form.password_field :password_confirmation, required: true, minlength: 8 %>
-      </div>
+        <div class="field">
+          <%= form.label :password, "Senha" %>
+          <%= form.password_field :password, required: true, minlength: 8,
+                pattern: "(?=.*[a-z])(?=.*[A-Z])(?=.*[^A-Za-z0-9\\s]).{8,}",
+                title: "Mínimo de 8 caracteres, com letra maiúscula, minúscula e caractere especial" %>
+          <p class="field-hint">Mínimo de 8 caracteres, com letra maiúscula, minúscula e caractere especial.</p>
+        </div>
 
-      <%= form.submit "Continuar", class: "btn btn-primary" %>
-    <% end %>
+        <div class="field">
+          <%= form.label :password_confirmation, "Confirmar senha" %>
+          <%= form.password_field :password_confirmation, required: true, minlength: 8 %>
+        </div>
 
-    <p class="auth-alt-action">
-      Já tem conta?
-      <%= link_to "Entrar", login_path, class: "btn btn-secondary" %>
-    </p>
+        <%= form.submit "Continuar", class: "btn btn-primary" %>
+      <% end %>
+
+      <p class="auth-alt-action">
+        Já tem conta?
+        <%= link_to "Entrar", login_path %>
+      </p>
+    </div>
   </div>
 </main>

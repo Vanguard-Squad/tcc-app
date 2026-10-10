@@ -1,0 +1,8 @@
+<nav class="tabbar" aria-label="Menu principal">
+  <% navigation_items.each do |item| %>
+    <%= link_to item.path, class: [ "tab", ("is-active" if item.active) ], "aria-current": (item.active ? "page" : nil) do %>
+      <%= icon(item.icon, size: 22) %>
+      <span><%= item.label %></span>
+    <% end %>
+  <% end %>
+</nav>

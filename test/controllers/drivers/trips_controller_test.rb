@@ -69,6 +69,17 @@ module Drivers
       assert_response :unprocessable_entity
     end
 
+    test "the GPS accuracy goes along with the broadcast position" do
+      create_trip!(vehicle: @vehicle, driver: @driver_user.driver)
+      sign_in(@driver_user)
+
+      post drivers_trip_position_url, params: { latitude: -23.5, longitude: -46.6, accuracy: 8.42 }, as: :json
+
+      message = JSON.parse(broadcasts(Trip.stream_name_for(@vehicle.id)).last)
+      assert_equal "position", message["event"]
+      assert_equal [ -23.5, -46.6, 8.4 ], message.values_at("lat", "lng", "accuracy")
+    end
+
     test "position without an active trip is rejected" do
       sign_in(@driver_user)
 

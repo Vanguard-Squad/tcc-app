@@ -1,7 +1,10 @@
 <% content_for :title, "Editar ônibus" %>
 
 <main class="page page-narrow">
+  <%= back_link "Frota", vehicles_path %>
   <h1>Editar ônibus <%= @vehicle.license_plate_was %></h1>
 
-  <%= render "form", vehicle: @vehicle, routes: @routes, url: vehicle_path(@vehicle), submit_label: "Salvar" %>
+  <section class="panel">
+    <%= render "form", vehicle: @vehicle, routes: @routes, url: vehicle_path(@vehicle), submit_label: "Salvar alterações" %>
+  </section>
 </main>

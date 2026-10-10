@@ -2,35 +2,58 @@
 
 <main class="page">
   <div class="page-header">
-    <h1>Rotas</h1>
-    <%= link_to "Cadastrar rota", new_route_path, class: "btn btn-primary btn-inline" %>
+    <div>
+      <h1>Rotas</h1>
+      <p class="page-subtitle">Paradas em ordem de passagem e os ônibus que fazem cada rota.</p>
+    </div>
+    <%= link_to new_route_path, class: "btn btn-primary" do %><%= icon(:plus, size: 18) %> Rota<% end %>
   </div>
 
-  <table class="data-table">
-    <thead>
-      <tr>
-        <th>Nome</th>
-        <th>Paradas</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
+  <% if @routes.any? %>
+    <div class="route-cards">
       <% @routes.each do |route| %>
-        <tr>
-          <td><%= route.name %></td>
-          <td>
-            <% if route.stops.any? %>
-              <%= route.stops.map { |stop| "#{stop.step}. #{stop.address.label_with_city}" }.join(" → ") %>
-            <% else %>
-              Nenhuma parada cadastrada
-            <% end %>
-          </td>
-          <td><%= link_to "Editar", edit_route_path(route) %></td>
-        </tr>
+        <% stops = route.stops %>
+        <article class="route-card">
+          <div class="route-card-header">
+            <h2><%= route.name %></h2>
+            <%= link_to "Editar", edit_route_path(route), class: "btn btn-secondary btn-small" %>
+          </div>
+
+          <% if stops.any? %>
+            <ol class="line-diagram" aria-hidden="true">
+              <% stops.each do |_stop| %><li></li><% end %>
+            </ol>
+            <p class="route-card-ends">
+              <span><%= stops.first.address.label_with_city %></span>
+              <% if stops.size > 1 %>
+                <span class="route-card-to">até</span>
+                <span><%= stops.last.address.label_with_city %></span>
+              <% end %>
+            </p>
+          <% else %>
+            <p class="muted">Nenhuma parada cadastrada.</p>
+          <% end %>
+
+          <ul class="inline-list">
+            <li><%= icon(:pin, size: 16) %> <%= pluralize(stops.size, "parada", "paradas") %></li>
+            <li>
+              <%= icon(:bus, size: 16) %>
+              <% if route.vehicles.any? %>
+                <%= route.vehicles.map(&:license_plate).sort.to_sentence %>
+              <% else %>
+                <span class="status-badge status-waiting">Sem ônibus</span>
+              <% end %>
+            </li>
+          </ul>
+        </article>
       <% end %>
-      <% if @routes.empty? %>
-        <tr><td colspan="3">Nenhuma rota cadastrada ainda.</td></tr>
-      <% end %>
-    </tbody>
-  </table>
+    </div>
+  <% else %>
+    <section class="panel empty-state">
+      <%= icon(:route, size: 36, css: "empty-icon") %>
+      <strong>Nenhuma rota cadastrada</strong>
+      Monte a primeira rota com as paradas em ordem de passagem.
+      <div><%= link_to "Cadastrar rota", new_route_path, class: "btn btn-primary" %></div>
+    </section>
+  <% end %>
 </main>

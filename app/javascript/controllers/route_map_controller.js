@@ -1,53 +1,107 @@
 import { Controller } from "@hotwired/stimulus"
-import * as L from "leaflet"
-import { drivingRoute } from "lib/osrm"
+import { Turbo } from "@hotwired/turbo-rails"
+import { createConsumer } from "@rails/actioncable"
+import {
+  createMap, addViewControls, addStatusControl, BusMarker, RouteProgress, UserLocation,
+  renderProgress, renderSummary, FIT_OPTIONS
+} from "lib/route_map"
 
-// Sem um bundler, os ícones padrão do Leaflet apontam para caminhos
-// relativos inexistentes. `Icon.Default` sempre concatena um imagePath
-// autodetectado na frente da URL (mesmo se já for absoluta), então usamos
-// um `Icon` normal, com as mesmas medidas padrão, apontando pro CDN.
-const markerIcon = new L.Icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconRetinaUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png",
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  iconSize: [ 25, 41 ],
-  iconAnchor: [ 12, 41 ],
-  popupAnchor: [ 1, -34 ],
-  shadowSize: [ 41, 41 ]
-})
-
-// Renderiza as paradas de uma rota num mapa Leaflet, em ordem, com o
-// trajeto seguindo as ruas de verdade (via OSRM). Se o serviço de rotas
-// falhar, cai de volta para uma linha reta entre as paradas. Paradas sem
-// coordenadas (endereço não geocodificado) são ignoradas no mapa.
+// Mapa da rota do motorista: paradas numeradas em ordem, trajeto pelas ruas
+// e, com viagem em andamento, o ônibus em tempo real (Action Cable) com o
+// trecho até a próxima parada calculado a partir da posição real dele.
 export default class extends Controller {
-  static values = { stops: Array }
+  static targets = [ "map" ]
+  static values = { stops: Array, vehicleId: Number, tripActive: Boolean, bus: Object }
 
   async connect() {
-    const geocoded = this.stopsValue.filter((stop) => stop.lat && stop.lng)
-
-    if (geocoded.length === 0) {
-      this.element.innerHTML = "<p>Nenhuma parada com localização disponível ainda.</p>"
+    const stops = this.stopsValue.filter((stop) => stop.lat != null && stop.lng != null)
+    if (stops.length === 0) {
+      this.mapTarget.innerHTML = '<p class="map-empty">Nenhuma parada com localização disponível ainda.</p>'
       return
     }
 
-    const map = L.map(this.element).setView([ geocoded[0].lat, geocoded[0].lng ], 13)
+    this.map = createMap(this.mapTarget)
+    this.status = addStatusControl(this.map)
+    this.route = new RouteProgress(this.map, stops, { onChange: (info) => this.render(info) })
+    this.map.fitBounds(this.route.stopBounds(), FIT_OPTIONS)
 
-    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-      attribution: "&copy; OpenStreetMap contributors"
-    }).addTo(map)
-
-    const straightLine = geocoded.map((stop) => [ stop.lat, stop.lng ])
-
-    geocoded.forEach((stop) => {
-      L.marker([ stop.lat, stop.lng ], { icon: markerIcon }).addTo(map).bindPopup(`${stop.step}. ${stop.label}`)
+    this.following = false
+    this.me = new UserLocation(this.map, { onStatus: (text) => this.status(text) })
+    this.controls = addViewControls(this.map, {
+      onFollow: () => this.setFollowing(!this.following),
+      onOverview: () => { this.setFollowing(false); this.map.fitBounds(this.route.bounds(), FIT_OPTIONS) },
+      onLocate: () => this.toggleLocation()
     })
+    this.controls.setBusAvailable(false)
+    this.map.on("dragstart", () => this.setFollowing(false))
 
-    const road = geocoded.length > 1 ? await drivingRoute(geocoded) : null
-    const roadPath = road?.path
-    const path = roadPath || straightLine
+    await this.route.draw()
+    if (!this.map) return
 
-    L.polyline(path, { color: "blue", weight: 4 }).addTo(map)
-    map.fitBounds(path)
+    this.map.fitBounds(this.route.bounds(), FIT_OPTIONS)
+    renderSummary(this.element, this.route.summary())
+
+    if (!this.tripActiveValue) return
+
+    this.bus = new BusMarker(this.map)
+    if (this.busValue.lat != null) this.onPosition(this.busValue)
+    this.subscribe()
+  }
+
+  disconnect() {
+    this.subscription?.unsubscribe()
+    this.consumer?.disconnect()
+    this.me?.stop()
+    this.route?.remove?.()
+    this.bus?.remove()
+    this.map?.remove()
+    this.map = null
+  }
+
+  subscribe() {
+    this.consumer = createConsumer()
+    this.subscription = this.consumer.subscriptions.create(
+      { channel: "TripChannel", vehicle_id: this.vehicleIdValue },
+      { received: (data) => this.received(data) }
+    )
+  }
+
+  received(data) {
+    if (data.event === "position" && data.lat != null) {
+      this.onPosition(data)
+    } else if (data.event === "started" || data.event === "finished") {
+      Turbo.visit(window.location.href, { action: "replace" })
+    }
+  }
+
+  onPosition({ lat, lng, accuracy }) {
+    if (!this.map) return
+
+    this.bus.moveTo({ lat, lng, accuracy })
+    this.controls.setBusAvailable(true)
+    this.render(this.route.update({ lat, lng }))
+
+    if (this.following) this.map.panTo([ lat, lng ], { animate: true })
+  }
+
+  render(info) {
+    if (info) renderProgress(this.element, info)
+  }
+
+  toggleLocation() {
+    if (this.me.active) {
+      this.me.stop()
+      this.status("")
+    } else {
+      this.setFollowing(false)
+      this.me.start()
+    }
+    this.controls.setLocating(this.me.active)
+  }
+
+  setFollowing(following) {
+    this.following = following && Boolean(this.bus?.latLng)
+    this.controls.setFollowing(this.following)
+    if (this.following) this.map.setView(this.bus.latLng, Math.max(this.map.getZoom(), 16))
   }
 }

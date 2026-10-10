@@ -1,0 +1,7 @@
+<%= render "shared/form_errors", object: user %>
+
+<%= form_with model: user, url: url, method: user.persisted? ? :patch : :post, local: true, class: "auth-form" do |form| %>
+  <%= render "members/account_fields", form: form %>
+
+  <%= form.submit submit_label, class: "btn btn-primary" %>
+<% end %>

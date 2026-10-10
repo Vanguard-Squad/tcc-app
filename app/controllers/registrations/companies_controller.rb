@@ -13,6 +13,7 @@ module Registrations
 
       if @company.save
         current_user.update!(company: @company)
+        audit("company.created", @company)
         redirect_to root_path, notice: "Cadastro concluído! Bem-vindo(a), #{current_user.name}."
       else
         render :new, status: :unprocessable_entity

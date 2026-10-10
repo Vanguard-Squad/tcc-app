@@ -1,24 +1,24 @@
-<nav class="sidebar">
-  <div class="sidebar-brand">Tcc App</div>
+<nav class="sidebar" aria-label="Menu principal">
+  <div class="sidebar-brand">
+    <span class="brand-mark" aria-hidden="true"></span>
+    <div>
+      <strong><%= current_company.name %></strong>
+      <span><%= role_label(current_user.role) %></span>
+    </div>
+  </div>
 
-  <div class="sidebar-links">
-    <%= link_to "Início", root_path, class: "sidebar-link" %>
-
-    <% if current_user.owner? || current_user.manager? %>
-      <%= link_to "Membros", members_path, class: "sidebar-link" %>
-      <%= link_to "Frota", vehicles_path, class: "sidebar-link" %>
-      <%= link_to "Rotas", routes_path, class: "sidebar-link" %>
-    <% end %>
-
-    <% if current_user.student? %>
-      <%= link_to "Meu ônibus", students_trip_path, class: "sidebar-link" %>
-    <% end %>
-
-    <% if current_user.driver? %>
-      <%= link_to "Minha rota", drivers_route_path, class: "sidebar-link" %>
-      <%= link_to "Meus passageiros", passengers_drivers_route_path, class: "sidebar-link" %>
+  <% items = navigation_items %>
+  <div class="nav-line" style="--nav-count: <%= items.size %>">
+    <% items.each do |item| %>
+      <%= nav_item(item.label, item.path, item.icon, active: item.active) %>
     <% end %>
   </div>
 
-  <%= button_to "Sair", logout_path, method: :delete, class: "sidebar-link sidebar-link-button" %>
+  <div class="sidebar-user">
+    <%= avatar(current_user, size: :sm) %>
+    <span class="sidebar-user-name"><%= current_user.name %></span>
+    <%= button_to logout_path, method: :delete, class: "icon-button", form_class: "inline-form", title: "Sair", "aria-label": "Sair" do %>
+      <%= icon(:logout, size: 18) %>
+    <% end %>
+  </div>
 </nav>

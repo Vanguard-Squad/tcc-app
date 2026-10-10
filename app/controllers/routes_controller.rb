@@ -4,7 +4,7 @@ class RoutesController < ApplicationController
   before_action :set_route, only: %i[edit update]
 
   def index
-    @routes = current_company.routes.includes(stops: :address).order(:name)
+    @routes = current_company.routes.includes(:vehicles, stops: :address).order(:name)
   end
 
   def new
@@ -18,6 +18,7 @@ class RoutesController < ApplicationController
     assign_stop_order
 
     if @route.save
+      audit("route.created", @route)
       redirect_to routes_path, notice: "Rota cadastrada com sucesso."
     else
       load_stop_address_options
@@ -34,6 +35,7 @@ class RoutesController < ApplicationController
     assign_stop_order
 
     if @route.save
+      audit("route.updated", @route, **Log.changes_of(@route), paradas: @route.stops.size)
       redirect_to routes_path, notice: "Rota atualizada com sucesso."
     else
       load_stop_address_options
