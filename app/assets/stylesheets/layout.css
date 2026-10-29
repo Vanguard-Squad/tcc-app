@@ -3,6 +3,7 @@
 .app-shell {
   display: flex;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .app-content {
@@ -106,6 +107,7 @@
   flex-shrink: 0;
   width: 248px;
   height: 100vh;
+  height: 100dvh;
   padding: 1.5rem 1.1rem 1rem;
   background: var(--surface);
   border-right: 1px solid var(--rule);
@@ -286,9 +288,11 @@
     left: 0;
     z-index: 1000;
     display: flex;
-    padding-bottom: env(safe-area-inset-bottom);
-    background: var(--surface);
+    padding: 0 env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    background: rgba(255, 255, 255, 0.94);
     border-top: 1px solid var(--rule);
+    -webkit-backdrop-filter: saturate(1.6) blur(14px);
+    backdrop-filter: saturate(1.6) blur(14px);
   }
 
   .tab {
@@ -297,13 +301,16 @@
     flex: 1;
     flex-direction: column;
     align-items: center;
-    gap: 0.15rem;
+    gap: 0.2rem;
     min-width: 0;
-    padding: 0.5rem 0.25rem 0.45rem;
+    min-height: 60px;
+    padding: 0.45rem 0.25rem 0.4rem;
     color: var(--ink-soft);
     font-size: 0.72rem;
     font-weight: 700;
     text-decoration: none;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   .tab span {
@@ -313,20 +320,26 @@
     white-space: nowrap;
   }
 
-  /* A aba atual ganha a "estação" amarela em cima do ícone. */
+  /* O ícone fica dentro de uma pílula; na aba atual ela vira a "estação" amarela. */
+  .tab .icon {
+    box-sizing: content-box;
+    padding: 4px 18px;
+    border-radius: 999px;
+    transition: background 0.15s ease, transform 0.1s ease;
+  }
+
+  .tab:active .icon {
+    background: var(--rule-soft);
+    transform: scale(0.94);
+  }
+
   .tab.is-active {
     color: var(--ink);
   }
 
-  .tab.is-active::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 25%;
-    right: 25%;
-    height: 3px;
-    border-radius: 0 0 3px 3px;
-    background: var(--signal);
+  .tab.is-active .icon {
+    background: var(--signal-soft);
+    box-shadow: inset 0 0 0 1.5px var(--signal);
   }
 
   .app-content {
@@ -334,7 +347,24 @@
   }
 
   .page {
-    padding: 1.25rem 1rem 2rem;
+    padding: 1.25rem max(1rem, env(safe-area-inset-right)) 2rem max(1rem, env(safe-area-inset-left));
+  }
+
+  /* Ações do cabeçalho viram uma fileira de botões do mesmo tamanho. */
+  .page-header {
+    align-items: stretch;
+    flex-direction: column;
+    margin-bottom: 1.25rem;
+  }
+
+  .page-header-actions {
+    display: grid;
+    grid-auto-columns: minmax(0, 1fr);
+    grid-auto-flow: column;
+  }
+
+  .page-header-actions .btn {
+    padding-inline: 0.5rem;
   }
 
   h1 {
@@ -379,4 +409,57 @@
   .flash-stack {
     padding: 0.75rem 1rem 0;
   }
+}
+
+/* ---------- Dentro do app nativo (Hotwire Native) ---------- */
+
+/* A barra nativa já mostra o título e o botão de voltar. */
+.is-native .topbar,
+.is-native .back-link {
+  display: none;
+}
+
+.is-native {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.is-native input,
+.is-native textarea,
+.is-native .numeric,
+.is-native .plate {
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.native-account {
+  padding-top: 0;
+}
+
+.native-account-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.native-account-row > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.native-account-row strong,
+.native-account-row span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.native-account-row span {
+  color: var(--ink-soft);
+  font-size: 0.85rem;
 }

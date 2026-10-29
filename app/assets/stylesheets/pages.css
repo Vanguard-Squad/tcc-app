@@ -455,6 +455,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .auth-art {
@@ -600,12 +601,22 @@
     font-size: 1.6rem;
   }
 
+  /* Texto passa por cima das linhas do desenho; elas recuam para não competir. */
+  .auth-art-lines {
+    opacity: 0.45;
+  }
+
   .auth-art-copy p {
     font-size: 0.95rem;
   }
 
+  .auth-art {
+    padding-top: max(1.25rem, env(safe-area-inset-top));
+  }
+
   .auth-main {
     align-items: flex-start;
+    padding-bottom: max(2rem, env(safe-area-inset-bottom));
   }
 }
 
@@ -646,6 +657,20 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+/* Motorista usa com uma mão: GPS ocupa a linha toda, os outros dois dividem a de baixo. */
+@media (max-width: 560px) {
+  .trip-controls-source {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .trip-controls-source .btn:first-child {
+    grid-column: 1 / -1;
+    min-height: 52px;
+  }
 }
 
 .passenger-group {

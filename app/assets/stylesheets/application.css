@@ -9,6 +9,9 @@
  *   layout.css       estrutura do app, menu-linha, barra de abas
  *   maps.css         mapa da rota, marcadores, painel de progresso
  *   pages.css        telas específicas (dashboard, login, aluno, motorista)
+ *
+ * O app também roda dentro do Hotwire Native: nesse caso o <body> recebe
+ * .is-native e a barra de navegação nativa substitui o cabeçalho web.
  */
 
 :root {
@@ -61,10 +64,12 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   margin: 0;
+  overscroll-behavior-y: none;
   font-family: var(--font-text);
   font-size: 1rem;
   line-height: 1.5;
@@ -99,6 +104,17 @@ a {
 
 a:hover {
   color: var(--line-blue-dark);
+}
+
+/* Toque responde na hora: sem o atraso de duplo toque para zoom. */
+a,
+button,
+input,
+select,
+textarea,
+label,
+summary {
+  touch-action: manipulation;
 }
 
 :focus-visible {
@@ -259,7 +275,14 @@ a:hover {
   text-decoration: none;
   white-space: nowrap;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Retorno de toque: no celular não existe hover, então o botão "afunda". */
+.btn:active {
+  transform: scale(0.98);
 }
 
 .btn-primary {

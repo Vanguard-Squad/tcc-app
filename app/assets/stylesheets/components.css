@@ -479,3 +479,41 @@
 .form-section-hint {
   margin: -0.6rem 0 0.9rem;
 }
+
+/* No celular os filtros rolam de lado em vez de quebrar em duas linhas. */
+@media (max-width: 720px) {
+  .toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .segmented {
+    flex-wrap: nowrap;
+    max-width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .segmented::-webkit-scrollbar {
+    display: none;
+  }
+
+  .segmented a {
+    flex: none;
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .search-field {
+    flex-basis: auto;
+  }
+
+  .search-field input {
+    min-height: 44px;
+  }
+
+  .data-table.stack tr:active td {
+    background: transparent;
+  }
+}

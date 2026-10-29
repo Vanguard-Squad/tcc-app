@@ -12,6 +12,9 @@ Rails.application.routes.draw do
   # Defines the root path route ("/")
   root "home#index"
 
+  # Configuração de navegação dos apps Hotwire Native (ios_v1, android_v1).
+  get "/configurations/:platform", to: "hotwire_native/configurations#show", as: :hotwire_native_configuration, defaults: { format: :json }
+
   get    "/login",  to: "sessions#new", as: :login
   post   "/login",  to: "sessions#create"
   delete "/logout", to: "sessions#destroy", as: :logout

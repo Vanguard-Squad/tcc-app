@@ -1,0 +1,13 @@
+<%# No app nativo não há cabeçalho web; a conta e o "Sair" ficam no fim da tela inicial. %>
+<section class="page native-account" aria-label="Sua conta">
+  <div class="native-account-row">
+    <%= avatar(current_user) %>
+    <div>
+      <strong><%= current_user.name %></strong>
+      <span><%= role_label(current_user.role) %> · <%= current_company.name %></span>
+    </div>
+    <%= button_to logout_path, method: :delete, class: "btn btn-secondary btn-small", form_class: "inline-form" do %>
+      <%= icon(:logout, size: 18) %> Sair
+    <% end %>
+  </div>
+</section>
