@@ -3,8 +3,13 @@ class RoutesController < ApplicationController
 
   before_action :set_route, only: %i[edit update]
 
+  # Pendências apontadas no painel "Precisa de atenção" do início.
+  ISSUES = { "sem-paradas" => "Rotas sem paradas", "sem-onibus" => "Rotas sem ônibus" }.freeze
+
   def index
     @routes = current_company.routes.includes(:vehicles, stops: :address).order(:name)
+    @issue = params[:pendencia].presence_in(ISSUES.keys)
+    @routes = @routes.where.missing(@issue == "sem-paradas" ? :stops : :vehicles) if @issue
   end
 
   def new

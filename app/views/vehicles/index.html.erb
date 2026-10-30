@@ -9,6 +9,10 @@
     <%= link_to new_vehicle_path, class: "btn btn-primary" do %><%= icon(:plus, size: 18) %> Ônibus<% end %>
   </div>
 
+  <% if @issue %>
+    <%= render "shared/issue_filter", label: VehiclesController::ISSUES[@issue], clear_path: vehicles_path %>
+  <% end %>
+
   <div class="table-wrap">
     <table class="data-table stack">
       <thead>

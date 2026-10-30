@@ -517,3 +517,27 @@
     background: transparent;
   }
 }
+
+/* ---------- Filtro de pendência ---------- */
+
+.issue-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.6rem;
+  margin: 0 0 1rem;
+  padding: 0.65rem 1rem;
+  border-left: 4px solid var(--signal);
+  border-radius: var(--radius-sm);
+  background: var(--signal-soft);
+  color: var(--signal-ink);
+}
+
+.issue-filter strong {
+  color: var(--ink);
+}
+
+.issue-filter-clear {
+  margin-left: auto;
+  font-weight: 700;
+}

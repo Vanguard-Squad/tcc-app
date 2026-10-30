@@ -15,10 +15,14 @@
     </div>
   </div>
 
+  <% if @issue %>
+    <%= render "shared/issue_filter", label: MembersController::ISSUES[@issue], clear_path: members_path %>
+  <% end %>
+
   <div class="toolbar">
     <nav class="segmented" aria-label="Filtrar por papel">
       <% [ [ nil, "Todos", @total ], [ "alunos", "Alunos", @counts["student"] ], [ "motoristas", "Motoristas", @counts["driver"] ], [ "secretaria", "Secretaria", @counts["manager"] ] ].each do |key, label, count| %>
-        <%= link_to members_path(papel: key, q: params[:q].presence), class: ("is-active" if @filter == key), "aria-current": (@filter == key ? "page" : nil) do %>
+        <%= link_to members_path(papel: key, q: params[:q].presence, pendencia: @issue), class: ("is-active" if @filter == key), "aria-current": (@filter == key ? "page" : nil) do %>
           <%= label %><span class="count"><%= count.to_i %></span>
         <% end %>
       <% end %>
@@ -26,6 +30,7 @@
 
     <%= form_with url: members_path, method: :get, local: true, class: "search-field", role: "search" do |form| %>
       <%= hidden_field_tag :papel, @filter if @filter %>
+      <%= hidden_field_tag :pendencia, @issue if @issue %>
       <%= icon(:search, size: 18) %>
       <%= form.search_field :q, value: params[:q], placeholder: "Buscar por nome ou e-mail", "aria-label": "Buscar membros" %>
     <% end %>

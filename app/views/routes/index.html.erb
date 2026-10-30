@@ -9,6 +9,10 @@
     <%= link_to new_route_path, class: "btn btn-primary" do %><%= icon(:plus, size: 18) %> Rota<% end %>
   </div>
 
+  <% if @issue %>
+    <%= render "shared/issue_filter", label: RoutesController::ISSUES[@issue], clear_path: routes_path %>
+  <% end %>
+
   <% if @routes.any? %>
     <div class="route-cards">
       <% @routes.each do |route| %>

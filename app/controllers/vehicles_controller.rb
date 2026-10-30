@@ -4,8 +4,13 @@ class VehiclesController < ApplicationController
   before_action :set_vehicle, only: %i[edit update]
   before_action :load_routes, only: %i[new create edit update]
 
+  # Pendências apontadas no painel "Precisa de atenção" do início.
+  ISSUES = { "sem-rota" => "Ônibus ativos sem rota", "sem-motorista" => "Ônibus ativos sem motorista na escala" }.freeze
+
   def index
     @vehicles = current_company.vehicles.includes(:route, :vehicle_students, drivers: :user).order(:license_plate)
+    @issue = params[:pendencia].presence_in(ISSUES.keys)
+    @vehicles = with_issue(@vehicles, @issue) if @issue
     @live_vehicle_ids = Trip.active.where(vehicle: @vehicles).pluck(:vehicle_id).to_set
   end
 
@@ -37,6 +42,14 @@ class VehiclesController < ApplicationController
   end
 
   private
+    def with_issue(vehicles, issue)
+      vehicles = vehicles.where(is_active: true)
+      case issue
+      when "sem-rota" then vehicles.where(route_id: nil)
+      when "sem-motorista" then vehicles.where.missing(:vehicle_drivers)
+      end
+    end
+
     def set_vehicle
       @vehicle = current_company.vehicles.find(params[:id])
     end

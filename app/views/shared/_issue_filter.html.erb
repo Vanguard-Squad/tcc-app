@@ -1,0 +1,6 @@
+<%# Faixa mostrada quando a lista chega filtrada por uma pendência do início. %>
+<div class="issue-filter" role="status">
+  <%= icon(:alert, size: 18) %>
+  <span>Filtrando: <strong><%= label %></strong></span>
+  <%= link_to "Limpar filtro", clear_path, class: "issue-filter-clear" %>
+</div>

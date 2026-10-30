@@ -2,7 +2,7 @@ module Dashboards
   # Painel do dono e da secretaria: o que está rodando agora, o que precisa
   # de atenção e o movimento de hoje.
   class Management
-    Alert = Struct.new(:count, :message, :path, keyword_init: true)
+    Alert = Struct.new(:count, :message, :path, :issue, keyword_init: true)
     LiveTrip = Struct.new(:trip, :boarded, :total, keyword_init: true)
 
     attr_reader :company
@@ -48,12 +48,12 @@ module Dashboards
       active = vehicles.select(&:is_active?)
 
       [
-        Alert.new(count: active.count { |vehicle| vehicle.route_id.nil? }, message: "ônibus ativo(s) sem rota", path: :vehicles_path),
-        Alert.new(count: active.count { |vehicle| vehicle.vehicle_drivers.empty? }, message: "ônibus sem motorista na escala", path: :vehicles_path),
-        Alert.new(count: students.count { |student| student.vehicle_students.empty? }, message: "aluno(s) sem ônibus", path: :members_path),
-        Alert.new(count: students.count { |student| !student.address&.geocoded? }, message: "aluno(s) com endereço sem localização no mapa", path: :members_path),
-        Alert.new(count: routes.count { |route| route.stops.empty? }, message: "rota(s) sem paradas", path: :routes_path),
-        Alert.new(count: routes.count { |route| route.vehicles.empty? }, message: "rota(s) sem ônibus", path: :routes_path)
+        Alert.new(count: active.count { |vehicle| vehicle.route_id.nil? }, message: "ônibus ativo(s) sem rota", path: :vehicles_path, issue: "sem-rota"),
+        Alert.new(count: active.count { |vehicle| vehicle.vehicle_drivers.empty? }, message: "ônibus sem motorista na escala", path: :vehicles_path, issue: "sem-motorista"),
+        Alert.new(count: students.count { |student| student.vehicle_students.empty? }, message: "aluno(s) sem ônibus", path: :members_path, issue: "sem-onibus"),
+        Alert.new(count: students.count { |student| !student.address&.geocoded? }, message: "aluno(s) com endereço sem localização no mapa", path: :members_path, issue: "sem-localizacao"),
+        Alert.new(count: routes.count { |route| route.stops.empty? }, message: "rota(s) sem paradas", path: :routes_path, issue: "sem-paradas"),
+        Alert.new(count: routes.count { |route| route.vehicles.empty? }, message: "rota(s) sem ônibus", path: :routes_path, issue: "sem-onibus")
       ].select { |alert| alert.count.positive? }
     end
 

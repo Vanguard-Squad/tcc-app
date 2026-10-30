@@ -76,7 +76,7 @@
           <ul class="alert-list">
             <% alerts.each do |alert| %>
               <li>
-                <%= link_to public_send(alert.path) do %>
+                <%= link_to public_send(alert.path, pendencia: alert.issue) do %>
                   <span class="alert-count numeric"><%= alert.count %></span>
                   <span><%= alert.message %></span>
                 <% end %>
