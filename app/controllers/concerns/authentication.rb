@@ -49,7 +49,9 @@ module Authentication
       return if current_user
 
       session[:return_to] = request.fullpath if request.get?
-      redirect_to login_path, alert: "Faça login para continuar."
+      # Abrir a página inicial deslogado (ex.: ao iniciar o app) não é erro; só avisa
+      # quando a pessoa tentou entrar numa página interna.
+      redirect_to login_path, alert: (request.path == root_path ? nil : "Faça login para continuar.")
     end
 
     def require_completed_registration

@@ -1,10 +1,10 @@
 <% if notice.present? || alert.present? %>
-  <div class="flash-stack" role="status">
+  <div class="flash-stack" role="status" data-controller="flash">
     <% if notice.present? %>
-      <p class="flash flash-notice"><%= icon(:check, size: 18) %><span><%= notice %></span></p>
+      <p class="flash flash-notice" data-flash-target="message" data-action="click->flash#dismiss"><%= icon(:check, size: 18) %><span><%= notice %></span></p>
     <% end %>
     <% if alert.present? %>
-      <p class="flash flash-alert"><%= icon(:alert, size: 18) %><span><%= alert %></span></p>
+      <p class="flash flash-alert" data-flash-target="message" data-action="click->flash#dismiss"><%= icon(:alert, size: 18) %><span><%= alert %></span></p>
     <% end %>
   </div>
 <% end %>

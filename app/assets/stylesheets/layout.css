@@ -463,3 +463,67 @@
   color: var(--ink-soft);
   font-size: 0.85rem;
 }
+
+/* Avisos como toast flutuante, no estilo dos apps de celular. */
+.is-native .flash-stack {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  right: 0.75rem;
+  z-index: 1100;
+  padding: 0;
+  pointer-events: none;
+}
+
+.is-native .flash {
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0 0 0.5rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-float);
+  font-weight: 700;
+  line-height: 1.35;
+  pointer-events: auto;
+  animation: flash-in 0.28s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.is-native .flash .icon {
+  flex: none;
+  box-sizing: content-box;
+  margin: 0;
+  padding: 0.4rem;
+  border-radius: 999px;
+}
+
+.is-native .flash-notice .icon {
+  background: var(--go-soft);
+  color: var(--go);
+}
+
+.is-native .flash-alert .icon {
+  background: var(--stop-soft);
+  color: var(--stop);
+}
+
+.is-native .flash.is-leaving {
+  animation: flash-out 0.2s ease-in forwards;
+}
+
+@keyframes flash-in {
+  from { opacity: 0; transform: translateY(-120%); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes flash-out {
+  to { opacity: 0; transform: translateY(-120%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-native .flash,
+  .is-native .flash.is-leaving {
+    animation-duration: 0.01s;
+  }
+}
