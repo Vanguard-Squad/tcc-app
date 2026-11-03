@@ -46,7 +46,8 @@ module RegistrationTestHelpers
     College.create!(name: name, address: address, is_active: true)
   end
 
-  def create_student!(company:, college: create_college!(company: company))
+  # Por padrão o aluno já tem o contrato aprovado; use contract: nil para o primeiro acesso.
+  def create_student!(company:, college: create_college!(company: company), contract: :approved)
     address = Address.create!(
       street: "Rua Aluno", number: 1, neighborhood: "Bairro", city: "Cidade Teste",
       country: "Brasil", zip_code: "22222-000", company: company
@@ -57,6 +58,7 @@ module RegistrationTestHelpers
     )
     user.build_student(cpf: SecureRandom.hex(6), birthdate: 18.years.ago.to_date, gender: "F", college: college, address: address)
     user.save!
+    user.student.create_contract!(status: contract) if contract
     user
   end
 

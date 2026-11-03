@@ -5,7 +5,8 @@ module AuditLogsHelper
     "vehicle" => "Frota",
     "route" => "Rotas",
     "trip" => "Viagens",
-    "checkin" => "Check-ins"
+    "checkin" => "Check-ins",
+    "contract" => "Contratos"
   }.freeze
 
   def audit_target_label(log)
@@ -18,6 +19,7 @@ module AuditLogsHelper
     when Route then "Rota #{record.name}"
     when Trip then "Viagem #{record.outbound? ? 'de ida' : 'de volta'} — #{record.vehicle.license_plate}"
     when Company then record.name
+    when Contract then "Contrato de #{record.student.user.name}"
     else "#{record.class.model_name.human} ##{record.id}"
     end
   end

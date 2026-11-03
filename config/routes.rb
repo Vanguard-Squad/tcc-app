@@ -45,6 +45,14 @@ Rails.application.routes.draw do
   get  "/membros/alunos/:id/editar", to: "members/students#edit", as: :edit_member_student
   patch "/membros/alunos/:id",       to: "members/students#update", as: :member_student
 
+  resources :contracts, path: "contratos", only: %i[index show] do
+    member do
+      get :file, path: "arquivo"
+      patch :approve, path: "aprovar"
+      patch :reject, path: "recusar"
+    end
+  end
+
   resources :vehicles, path: "frota", only: %i[index new create edit update]
   resources :routes, path: "rotas", only: %i[index new create edit update]
 
@@ -59,6 +67,9 @@ Rails.application.routes.draw do
 
   namespace :students, path: "aluno" do
     resource :trip, path: "", only: :show
+    resource :contract, path: "contrato", only: %i[show update] do
+      get :download, path: "pdf"
+    end
     resources :checkins, only: :create
     resource :qr_checkin, path: "checkin/qr", only: %i[show create]
   end

@@ -1,0 +1,61 @@
+<% content_for :title, "Contrato de #{@contract.student.user.name}" %>
+<% student = @contract.student %>
+
+<main class="page page-medium">
+  <%= back_link "Contratos", contracts_path %>
+  <div class="page-header">
+    <div>
+      <h1><%= student.user.name %></h1>
+      <p class="page-subtitle">Contrato de transporte</p>
+    </div>
+    <%= contract_status_badge(@contract) %>
+  </div>
+
+  <section class="panel">
+    <dl class="facts">
+      <div><dt>CPF</dt><dd><%= student.cpf %></dd></div>
+      <div><dt>E-mail</dt><dd><%= student.user.email %></dd></div>
+      <div><dt>Faculdade</dt><dd><%= student.college.name %></dd></div>
+      <% if @contract.submitted_at %>
+        <div><dt>Enviado em</dt><dd><%= l(@contract.submitted_at, format: :short) %></dd></div>
+      <% end %>
+      <% if @contract.reviewed_at %>
+        <div><dt><%= @contract.approved? ? "Aprovado" : "Recusado" %> por</dt><dd><%= @contract.reviewed_by&.name %> em <%= l(@contract.reviewed_at, format: :short) %></dd></div>
+      <% end %>
+      <% if @contract.rejected? %>
+        <div><dt>Motivo da recusa</dt><dd><%= @contract.rejection_reason %></dd></div>
+      <% end %>
+    </dl>
+  </section>
+
+  <% if @contract.signed_file.attached? %>
+    <section class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">Arquivo assinado</h2>
+        <%= link_to file_contract_path(@contract, baixar: 1), class: "panel-link", data: { turbo: false } do %><%= icon(:download, size: 16) %> Baixar<% end %>
+      </div>
+      <p class="cell-sub">
+        Confira se o documento é o contrato gerado pelo sistema e se a assinatura gov.br é válida em
+        <%= link_to "validar.iti.gov.br", "https://validar.iti.gov.br", target: "_blank", rel: "noopener" %>.
+      </p>
+      <iframe src="<%= file_contract_path(@contract) %>" class="contract-viewer" title="Contrato assinado"></iframe>
+    </section>
+  <% end %>
+
+  <% if @contract.under_review? %>
+    <section class="panel">
+      <h2 class="panel-title">Análise</h2>
+      <%= button_to approve_contract_path(@contract), method: :patch, class: "btn btn-go", form_class: "inline-form" do %>
+        <%= icon(:check, size: 18) %> Aprovar contrato
+      <% end %>
+
+      <%= form_with url: reject_contract_path(@contract), method: :patch, local: true, class: "auth-form" do |form| %>
+        <div class="field">
+          <%= form.label :rejection_reason, "Ou recuse informando o motivo" %>
+          <%= form.text_area :rejection_reason, rows: 3, required: true, placeholder: "Ex.: o arquivo enviado não tem a assinatura gov.br." %>
+        </div>
+        <%= form.submit "Recusar contrato", class: "btn btn-danger" %>
+      <% end %>
+    </section>
+  <% end %>
+</main>

@@ -5,6 +5,7 @@ class Student < ApplicationRecord
   has_many :vehicle_students
   has_many :vehicles, through: :vehicle_students
   has_many :checkins
+  has_one :contract, dependent: :destroy
 
   accepts_nested_attributes_for :address
   accepts_nested_attributes_for :college, reject_if: :all_blank
@@ -32,6 +33,15 @@ class Student < ApplicationRecord
     return nil if geocoded_stops.empty?
 
     geocoded_stops.min_by { |stop| address.distance_to([ stop.address.latitude, stop.address.longitude ]) }
+  end
+
+  # Contrato do aluno, criado na primeira vez que ele é consultado.
+  def current_contract
+    contract || create_contract!
+  end
+
+  def contract_approved?
+    contract&.approved? || false
   end
 
   private

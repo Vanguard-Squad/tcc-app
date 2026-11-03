@@ -12,9 +12,13 @@ module NavigationHelper
       items << NavItem.new(label: "Membros", path: members_path, icon: :users, active: section.start_with?("members"))
       items << NavItem.new(label: "Frota", path: vehicles_path, icon: :bus, active: section == "vehicles")
       items << NavItem.new(label: "Rotas", path: routes_path, icon: :route, active: section == "routes")
+      items << NavItem.new(label: "Contratos", path: contracts_path, icon: :contract, active: section == "contracts")
     end
     if current_user.owner?
       items << NavItem.new(label: "Auditoria", path: audit_logs_path, icon: :audit, active: section == "audit_logs")
+    end
+    if current_user.student? && !current_user.student&.contract_approved?
+      return [ NavItem.new(label: "Contrato", path: students_contract_path, icon: :contract, active: true) ]
     end
     if current_user.student?
       items << NavItem.new(label: "Meu ônibus", path: students_trip_path, icon: :bus, active: section.start_with?("students"))

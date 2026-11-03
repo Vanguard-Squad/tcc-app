@@ -17,7 +17,11 @@ class Log < ApplicationRecord
     "trip.started" => "Iniciou viagem",
     "trip.finished" => "Finalizou viagem",
     "checkin.registered" => "Registrou check-in",
-    "checkin.qr_registered" => "Registrou check-in por QR code"
+    "checkin.qr_registered" => "Registrou check-in por QR code",
+    "contract.downloaded" => "Baixou o contrato",
+    "contract.submitted" => "Enviou o contrato assinado",
+    "contract.approved" => "Aprovou contrato",
+    "contract.rejected" => "Recusou contrato"
   }.freeze
 
   IGNORED_CHANGES = %w[created_at updated_at password_digest latitude longitude].freeze

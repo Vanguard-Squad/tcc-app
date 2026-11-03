@@ -1,0 +1,68 @@
+<% content_for :title, "Contrato" %>
+
+<main class="page page-narrow">
+  <div class="page-header">
+    <div>
+      <h1>Contrato de transporte</h1>
+      <p class="page-subtitle">Para começar a usar o sistema, assine o contrato com a <%= current_company.name %>.</p>
+    </div>
+    <%= contract_status_badge(@contract) %>
+  </div>
+
+  <% if @contract.under_review? %>
+    <section class="panel empty-state">
+      <%= icon(:clock, size: 36, css: "empty-icon") %>
+      <strong>Contrato enviado, aguardando análise</strong>
+      A secretaria vai conferir a assinatura gov.br. Assim que for aprovado, você terá acesso ao sistema.
+      <span class="cell-sub">Enviado em <%= l(@contract.submitted_at, format: :short) %></span>
+    </section>
+  <% elsif @contract.approved? %>
+    <section class="panel empty-state">
+      <%= icon(:check, size: 36, css: "empty-icon") %>
+      <strong>Contrato aprovado</strong>
+      <%= link_to "Ir para o início", root_path, class: "btn btn-primary" %>
+    </section>
+  <% else %>
+    <% if @contract.rejected? %>
+      <section class="panel contract-rejection" role="alert">
+        <h2 class="panel-title"><%= icon(:alert, size: 18) %> Seu contrato foi recusado</h2>
+        <p><%= @contract.rejection_reason %></p>
+        <p class="cell-sub">Corrija o problema e envie o contrato assinado novamente.</p>
+      </section>
+    <% end %>
+
+    <ol class="contract-steps">
+      <li class="panel">
+        <span class="contract-step-number">1</span>
+        <div>
+          <h2 class="panel-title">Baixe o contrato</h2>
+          <p>O contrato já vem preenchido com os seus dados. Confira antes de assinar.</p>
+          <%= link_to download_students_contract_path, class: "btn btn-secondary", data: { turbo: false } do %><%= icon(:download, size: 18) %> Baixar contrato (PDF)<% end %>
+        </div>
+      </li>
+
+      <li class="panel">
+        <span class="contract-step-number">2</span>
+        <div>
+          <h2 class="panel-title">Assine pelo gov.br</h2>
+          <p>Acesse o Assinador gov.br, entre com sua conta (nível prata ou ouro), envie o PDF baixado e assine. Depois baixe o arquivo assinado.</p>
+          <%= link_to "Abrir Assinador gov.br", ContractsHelper::GOV_BR_SIGNER_URL, class: "btn btn-secondary", target: "_blank", rel: "noopener" %>
+        </div>
+      </li>
+
+      <li class="panel">
+        <span class="contract-step-number">3</span>
+        <div>
+          <h2 class="panel-title">Envie o contrato assinado</h2>
+          <%= form_with model: @contract, url: students_contract_path, method: :patch, local: true, class: "auth-form" do |form| %>
+            <div class="field">
+              <%= form.label :signed_file, "Arquivo assinado (PDF, até 10 MB)" %>
+              <%= form.file_field :signed_file, accept: "application/pdf", required: true %>
+            </div>
+            <%= form.button class: "btn btn-primary" do %><%= icon(:upload, size: 18) %> Enviar contrato<% end %>
+          <% end %>
+        </div>
+      </li>
+    </ol>
+  <% end %>
+</main>

@@ -1,0 +1,67 @@
+<% content_for :title, "Contratos" %>
+
+<main class="page">
+  <div class="page-header">
+    <div>
+      <h1>Contratos</h1>
+      <p class="page-subtitle">Contratos assinados pelo gov.br que os alunos enviaram. O aluno só usa o sistema depois da aprovação.</p>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <nav class="segmented" aria-label="Filtrar por situação">
+      <% [ [ "em-analise", "Em análise" ], [ "aguardando", "Aguardando assinatura" ], [ "recusados", "Recusados" ], [ "aprovados", "Aprovados" ] ].each do |key, label| %>
+        <%= link_to contracts_path(situacao: key), class: ("is-active" if @filter == key), "aria-current": (@filter == key ? "page" : nil) do %>
+          <%= label %><span class="count"><%= @counts[ContractsController::STATUS_FILTERS[key]].to_i %></span>
+        <% end %>
+      <% end %>
+    </nav>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data-table stack">
+      <thead>
+        <tr>
+          <th>Aluno</th>
+          <th>Faculdade</th>
+          <th>Situação</th>
+          <th>Enviado em</th>
+          <th><span class="visually-hidden">Ações</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @contracts.each do |contract| %>
+          <% user = contract.student.user %>
+          <tr>
+            <td>
+              <div class="cell-main">
+                <%= avatar(user) %>
+                <div>
+                  <strong><%= user.name %></strong>
+                  <span class="cell-sub">CPF <%= contract.student.cpf %></span>
+                </div>
+              </div>
+            </td>
+            <td class="cell-details"><%= contract.student.college.name %></td>
+            <td><%= contract_status_badge(contract) %></td>
+            <td><%= contract.submitted_at ? l(contract.submitted_at, format: :short) : "—" %></td>
+            <td class="cell-actions">
+              <%= link_to contract.under_review? ? "Analisar" : "Ver", contract_path(contract), class: [ "btn btn-small", contract.under_review? ? "btn-primary" : "btn-secondary" ] %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <% if @contracts.empty? %>
+      <div class="empty-state">
+        <strong>Nenhum contrato nesta situação</strong>
+        <% if @filter == "aguardando" %>
+          O contrato do aluno aparece aqui depois do primeiro login dele.
+        <% else %>
+          Quando um aluno enviar o contrato assinado, ele aparece em "Em análise".
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</main>
