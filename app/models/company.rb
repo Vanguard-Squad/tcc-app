@@ -6,6 +6,8 @@ class Company < ApplicationRecord
   has_many :vehicles
   has_many :addresses
   has_many :colleges, through: :addresses
+  # Contrato que cada aluno baixa, assina pelo gov.br e devolve.
+  has_one_attached :contract_template
 
   accepts_nested_attributes_for :address
 
@@ -13,6 +15,7 @@ class Company < ApplicationRecord
 
   validates :name, presence: true
   validates :cnpj, presence: true, uniqueness: true
+  validates :contract_template, pdf_attachment: { label: "O modelo de contrato" }
 
   private
     # O endereço da empresa é criado antes dela existir; só agora dá para ligá-lo.

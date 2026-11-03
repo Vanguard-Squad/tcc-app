@@ -18,6 +18,7 @@ module Members
       @user.role = :student
       @user.is_active = true
       @user.company = current_company
+      @user.must_change_password = true
       assign_company_to_new_college
 
       if @user.save
@@ -35,6 +36,8 @@ module Members
     end
 
     def update
+      @user.must_change_password = true if student_update_params[:password].present?
+
       if @user.update(without_blank_password(student_update_params))
         audit("member.updated", @user, **Log.changes_of(@user, @user.student, @user.student.address))
         redirect_to members_path, notice: "Aluno atualizado com sucesso."

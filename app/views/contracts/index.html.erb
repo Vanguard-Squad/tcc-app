@@ -8,6 +8,25 @@
     </div>
   </div>
 
+  <section class="panel contract-template">
+    <div>
+      <h2 class="panel-title"><%= icon(:contract, size: 18) %> Modelo de contrato</h2>
+      <% if @template.attached? %>
+        <p>
+          <%= link_to @template.filename.to_s, template_contracts_path, target: "_blank", rel: "noopener", data: { turbo: false } %>
+          <span class="cell-sub">· atualizado em <%= l(@template.created_at, format: :short) %></span>
+        </p>
+      <% else %>
+        <p class="contract-template-missing"><%= icon(:alert, size: 16) %> Anexe o contrato da empresa. Sem ele, os alunos não conseguem baixar e assinar.</p>
+      <% end %>
+    </div>
+
+    <%= form_with url: template_contracts_path, method: :patch, local: true, multipart: true, class: "contract-template-form" do |form| %>
+      <%= form.file_field :contract_template, accept: "application/pdf", required: true, "aria-label": "PDF do modelo de contrato" %>
+      <%= form.button class: "btn btn-primary" do %><%= icon(:upload, size: 18) %> <%= @template.attached? ? "Substituir" : "Anexar" %> PDF<% end %>
+    <% end %>
+  </section>
+
   <div class="toolbar">
     <nav class="segmented" aria-label="Filtrar por situação">
       <% [ [ "em-analise", "Em análise" ], [ "aguardando", "Aguardando assinatura" ], [ "recusados", "Recusados" ], [ "aprovados", "Aprovados" ] ].each do |key, label| %>

@@ -923,3 +923,30 @@
   border: 1px solid var(--rule-soft);
   border-radius: var(--radius-sm);
 }
+
+.contract-template {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.contract-template p {
+  margin: 0.25rem 0 0;
+}
+
+.contract-template-missing {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  color: var(--stop);
+}
+
+.contract-template-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}

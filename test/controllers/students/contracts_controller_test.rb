@@ -4,6 +4,7 @@ module Students
   class ContractsControllerTest < ActionDispatch::IntegrationTest
     setup do
       _owner, @company = create_company_with_owner!
+      @company.contract_template.attach(fixture_file_upload("signed_contract.pdf", "application/pdf"))
       @student_user = create_student!(company: @company, contract: nil)
     end
 
@@ -28,13 +29,25 @@ module Students
       assert_redirected_to login_path
     end
 
-    test "downloads the contract filled with the student data" do
+    test "downloads the contract attached by the company" do
       sign_in(@student_user)
 
       get download_students_contract_url
       assert_response :success
       assert_equal "application/pdf", response.media_type
-      assert response.body.start_with?("%PDF")
+      assert_equal file_fixture("signed_contract.pdf").binread, response.body
+    end
+
+    test "without a company template the student is told to wait" do
+      @company.contract_template.purge
+      sign_in(@student_user)
+
+      get students_contract_url
+      assert_select "strong", text: "Contrato ainda não disponível"
+      assert_select "input[type=file]", count: 0
+
+      get download_students_contract_url
+      assert_redirected_to students_contract_path
     end
 
     test "uploading the signed PDF puts the contract under review" do

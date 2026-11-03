@@ -1,5 +1,6 @@
 class SessionsController < ApplicationController
   allow_unauthenticated_access only: %i[new create]
+  allow_pending_password_change only: :destroy
   allow_pending_contract only: :destroy
 
   def new
@@ -28,6 +29,7 @@ class SessionsController < ApplicationController
   private
     def after_login_path(user)
       return new_registration_company_path unless user.registration_complete?
+      return edit_password_path if user.must_change_password?
       return students_contract_path if user.student? && user.student && !user.student.contract_approved?
 
       session.delete(:return_to) || root_path

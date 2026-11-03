@@ -19,6 +19,8 @@ Rails.application.routes.draw do
   post   "/login",  to: "sessions#create"
   delete "/logout", to: "sessions#destroy", as: :logout
 
+  resource :password, path: "senha", only: %i[edit update]
+
   get  "/cadastro", to: "registrations#new", as: :new_registration
   post "/cadastro", to: "registrations#create", as: :registrations
 
@@ -46,6 +48,10 @@ Rails.application.routes.draw do
   patch "/membros/alunos/:id",       to: "members/students#update", as: :member_student
 
   resources :contracts, path: "contratos", only: %i[index show] do
+    collection do
+      get :template, path: "modelo"
+      patch :template, path: "modelo", action: :update_template
+    end
     member do
       get :file, path: "arquivo"
       patch :approve, path: "aprovar"

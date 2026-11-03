@@ -11,9 +11,11 @@ module Students
     end
 
     def download
-      document = Contract::Document.new(@contract)
+      template = current_company.contract_template
+      return redirect_to(students_contract_path, alert: "A empresa ainda não disponibilizou o contrato.") unless template.attached?
+
       audit("contract.downloaded", @contract)
-      send_data document.render, filename: document.filename, type: "application/pdf", disposition: "attachment"
+      send_data template.download, filename: template.filename.to_s, type: "application/pdf", disposition: "attachment"
     end
 
     def update

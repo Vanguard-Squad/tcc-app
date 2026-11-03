@@ -9,7 +9,13 @@
     <%= contract_status_badge(@contract) %>
   </div>
 
-  <% if @contract.under_review? %>
+  <% if @contract.awaiting_upload? && !current_company.contract_template.attached? %>
+    <section class="panel empty-state">
+      <%= icon(:clock, size: 36, css: "empty-icon") %>
+      <strong>Contrato ainda não disponível</strong>
+      A <%= current_company.name %> ainda não anexou o contrato. Volte mais tarde ou fale com a secretaria.
+    </section>
+  <% elsif @contract.under_review? %>
     <section class="panel empty-state">
       <%= icon(:clock, size: 36, css: "empty-icon") %>
       <strong>Contrato enviado, aguardando análise</strong>
@@ -36,7 +42,7 @@
         <span class="contract-step-number">1</span>
         <div>
           <h2 class="panel-title">Baixe o contrato</h2>
-          <p>O contrato já vem preenchido com os seus dados. Confira antes de assinar.</p>
+          <p>Leia o contrato da <%= current_company.name %> com atenção antes de assinar.</p>
           <%= link_to download_students_contract_path, class: "btn btn-secondary", data: { turbo: false } do %><%= icon(:download, size: 18) %> Baixar contrato (PDF)<% end %>
         </div>
       </li>

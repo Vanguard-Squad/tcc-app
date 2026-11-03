@@ -4,6 +4,7 @@ class ContractsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @owner, @company = create_company_with_owner!
     @manager = create_manager!(company: @company)
+    @company.contract_template.attach(fixture_file_upload("signed_contract.pdf", "application/pdf"))
     @student_user = create_student!(company: @company, contract: nil)
     @contract = @student_user.student.current_contract
     @contract.submit!(fixture_file_upload("signed_contract.pdf", "application/pdf"))
@@ -44,6 +45,28 @@ class ContractsControllerTest < ActionDispatch::IntegrationTest
     sign_in(@student_user)
     get students_contract_url
     assert_select "p", text: "Arquivo sem assinatura gov.br"
+  end
+
+  test "manager attaches the company contract template" do
+    sign_in(@manager)
+
+    patch template_contracts_url, params: { contract_template: fixture_file_upload("signed_contract.pdf", "application/pdf") }
+    assert_redirected_to contracts_path
+    assert @company.reload.contract_template.attached?
+
+    get template_contracts_url
+    assert_response :success
+    assert_equal "application/pdf", response.media_type
+  end
+
+  test "contract template must be a PDF" do
+    sign_in(@manager)
+
+    original = @company.contract_template.blob
+    patch template_contracts_url, params: { contract_template: fixture_file_upload("not_a_contract.txt", "text/plain") }
+    assert_redirected_to contracts_path
+    assert_equal "O modelo de contrato precisa ser um arquivo PDF", flash[:alert]
+    assert_equal original, @company.reload.contract_template.blob
   end
 
   test "manager views the signed file" do

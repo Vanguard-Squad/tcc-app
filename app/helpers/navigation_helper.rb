@@ -17,6 +17,9 @@ module NavigationHelper
     if current_user.owner?
       items << NavItem.new(label: "Auditoria", path: audit_logs_path, icon: :audit, active: section == "audit_logs")
     end
+    if current_user.must_change_password?
+      return [ NavItem.new(label: "Nova senha", path: edit_password_path, icon: :edit, active: true) ]
+    end
     if current_user.student? && !current_user.student&.contract_approved?
       return [ NavItem.new(label: "Contrato", path: students_contract_path, icon: :contract, active: true) ]
     end

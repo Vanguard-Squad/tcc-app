@@ -1,9 +1,7 @@
-# Contrato de transporte do aluno. O aluno baixa o PDF gerado pelo sistema,
-# assina pelo gov.br e anexa o arquivo assinado; a secretaria confere a
+# Contrato de transporte do aluno. O aluno baixa o modelo anexado pela
+# secretaria da empresa, assina pelo gov.br e anexa o arquivo assinado; a secretaria confere a
 # assinatura e aprova. Só com o contrato aprovado o aluno usa o sistema.
 class Contract < ApplicationRecord
-  MAX_FILE_SIZE = 10.megabytes
-
   belongs_to :student
   belongs_to :reviewed_by, class_name: "User", optional: true
   has_one_attached :signed_file
@@ -16,7 +14,7 @@ class Contract < ApplicationRecord
   }.freeze
 
   validates :rejection_reason, presence: true, if: :rejected?
-  validate :signed_file_is_a_pdf
+  validates :signed_file, pdf_attachment: { label: "O contrato assinado" }
 
   scope :for_company, ->(company) { joins(student: :user).where(users: { company_id: company.id }) }
 
@@ -41,12 +39,4 @@ class Contract < ApplicationRecord
   def reject!(reviewer, reason)
     update!(status: :rejected, reviewed_at: Time.current, reviewed_by: reviewer, rejection_reason: reason)
   end
-
-  private
-    def signed_file_is_a_pdf
-      return unless signed_file.attached? && attachment_changes["signed_file"]
-
-      errors.add(:base, "O contrato assinado precisa ser um arquivo PDF") unless signed_file.content_type == "application/pdf"
-      errors.add(:base, "O contrato assinado precisa ter no máximo 10 MB") if signed_file.byte_size > MAX_FILE_SIZE
-    end
 end

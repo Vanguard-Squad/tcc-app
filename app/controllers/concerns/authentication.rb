@@ -4,6 +4,7 @@ module Authentication
   included do
     before_action :require_authentication
     before_action :require_completed_registration
+    before_action :require_password_change
     before_action :require_approved_contract
 
     helper_method :current_user, :user_signed_in?
@@ -13,7 +14,12 @@ module Authentication
     def allow_unauthenticated_access(**options)
       skip_before_action :require_authentication, **options
       skip_before_action :require_completed_registration, **options
+      skip_before_action :require_password_change, **options
       skip_before_action :require_approved_contract, **options
+    end
+
+    def allow_pending_password_change(**options)
+      skip_before_action :require_password_change, **options
     end
 
     def allow_pending_contract(**options)
@@ -51,6 +57,11 @@ module Authentication
       return if current_user.registration_complete?
 
       redirect_to new_registration_company_path, alert: "Finalize o cadastro da sua empresa para continuar."
+    end
+
+    # Senha criada pela secretaria é provisória: o aluno troca no primeiro acesso.
+    def require_password_change
+      redirect_to edit_password_path if current_user&.must_change_password?
     end
 
     # Aluno só usa o sistema depois que a secretaria aprova o contrato assinado.

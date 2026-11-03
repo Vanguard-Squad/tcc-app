@@ -52,6 +52,7 @@ module Dashboards
         Alert.new(count: active.count { |vehicle| vehicle.vehicle_drivers.empty? }, message: "ônibus sem motorista na escala", path: :vehicles_path, issue: "sem-motorista"),
         Alert.new(count: students.count { |student| student.vehicle_students.empty? }, message: "aluno(s) sem ônibus", path: :members_path, issue: "sem-onibus"),
         Alert.new(count: students.count { |student| !student.address&.geocoded? }, message: "aluno(s) com endereço sem localização no mapa", path: :members_path, issue: "sem-localizacao"),
+        Alert.new(count: company.contract_template.attached? ? 0 : 1, message: "modelo de contrato não anexado", path: :contracts_path, issue: nil),
         Alert.new(count: Contract.for_company(company).under_review.count, message: "contrato(s) aguardando análise", path: :contracts_path, issue: nil),
         Alert.new(count: routes.count { |route| route.stops.empty? }, message: "rota(s) sem paradas", path: :routes_path, issue: "sem-paradas"),
         Alert.new(count: routes.count { |route| route.vehicles.empty? }, message: "rota(s) sem ônibus", path: :routes_path, issue: "sem-onibus")

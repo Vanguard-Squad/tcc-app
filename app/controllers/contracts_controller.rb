@@ -4,9 +4,10 @@ class ContractsController < ApplicationController
 
   STATUS_FILTERS = { "em-analise" => "under_review", "aguardando" => "pending", "recusados" => "rejected", "aprovados" => "approved" }.freeze
 
-  before_action :set_contract, except: :index
+  before_action :set_contract, except: %i[index template update_template]
 
   def index
+    @template = current_company.contract_template
     contracts = Contract.for_company(current_company)
     @counts = contracts.group(:status).count
     @filter = params[:situacao].presence_in(STATUS_FILTERS.keys) || "em-analise"
@@ -15,6 +16,26 @@ class ContractsController < ApplicationController
   end
 
   def show
+  end
+
+  # Modelo de contrato da empresa, que os alunos baixam para assinar.
+  def template
+    template = current_company.contract_template
+    return redirect_to(contracts_path, alert: "Nenhum modelo de contrato anexado.") unless template.attached?
+
+    send_data template.download, filename: template.filename.to_s, type: "application/pdf", disposition: "inline"
+  end
+
+  def update_template
+    file = params[:contract_template]
+    return redirect_to(contracts_path, alert: "Selecione o PDF do contrato.") if file.blank?
+
+    if current_company.update(contract_template: file)
+      audit("contract.template_uploaded", current_company, arquivo: current_company.contract_template.filename.to_s)
+      redirect_to contracts_path, notice: "Modelo de contrato atualizado. Os alunos já baixam esta versão."
+    else
+      redirect_to contracts_path, alert: current_company.errors.full_messages.to_sentence
+    end
   end
 
   def file
