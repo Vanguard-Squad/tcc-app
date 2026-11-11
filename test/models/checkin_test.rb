@@ -58,4 +58,22 @@ class CheckinTest < ActiveSupport::TestCase
     assert_equal :done, @checkin.leg_status(:outbound).first
     assert_equal :waiting, @checkin.leg_status(:return).first
   end
+
+  test "recorded_time aceita horário do aparelho dentro da viagem" do
+    trip = Trip.new(started_at: 10.minutes.ago)
+    sent = 5.minutes.ago.change(usec: 0)
+
+    assert_equal sent, Checkin.recorded_time(sent.iso8601, trip: trip)
+  end
+
+  test "recorded_time ignora horário fora da viagem ou inválido" do
+    trip = Trip.new(started_at: 10.minutes.ago)
+
+    freeze_time do
+      assert_equal Time.current, Checkin.recorded_time(1.hour.ago.iso8601, trip: trip)
+      assert_equal Time.current, Checkin.recorded_time(1.hour.from_now.iso8601, trip: trip)
+      assert_equal Time.current, Checkin.recorded_time("lixo", trip: trip)
+      assert_equal Time.current, Checkin.recorded_time(nil, trip: trip)
+    end
+  end
 end

@@ -50,7 +50,7 @@
           <% end %>
 
           <% if @next_step %>
-            <%= button_to Checkin::STEP_LABELS.fetch(@next_step), students_checkins_path, params: { step: @next_step }, class: "btn btn-go btn-large", form_class: "inline-form" %>
+            <%= button_to Checkin::STEP_LABELS.fetch(@next_step), students_checkins_path, params: { step: @next_step }, class: "btn btn-go btn-large", form_class: "inline-form", form: { data: { controller: "offline-checkin", action: "submit->offline-checkin#submit turbo:fetch-request-error->offline-checkin#failed" } } %>
             <p class="checkin-hint">Ou aponte a câmera do celular para o QR code mostrado pelo motorista.</p>
           <% else %>
             <p class="all-clear"><%= icon(:check, size: 18) %> Todas as etapas desta viagem foram registradas.</p>

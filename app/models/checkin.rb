@@ -27,8 +27,10 @@ class Checkin < ApplicationRecord
   belongs_to :vehicle
   belongs_to :student
 
+  # Aceita tanto o valor gravado ("return") quanto a chave do enum de Trip
+  # ("return_trip"), que é o que `trip.direction` devolve.
   def self.steps_for(direction)
-    STEPS_BY_DIRECTION.fetch(direction.to_s)
+    STEPS_BY_DIRECTION.fetch(Trip.directions.fetch(direction.to_s, direction.to_s))
   end
 
   def self.today_for(student:, vehicle:)
@@ -54,9 +56,19 @@ class Checkin < ApplicationRecord
     self.class.steps_for(direction).find { |step| self[step].nil? }
   end
 
-  def advance!(step, direction)
+  def advance!(step, direction, at: Time.current)
     raise InvalidStep, "Etapa fora de ordem." unless step.to_s == next_step(direction)
 
-    update!(step => Time.current, status: step.to_s == STEPS.last)
+    update!(step => at, status: step.to_s == STEPS.last)
+  end
+
+  # Horário informado pelo celular do aluno (check-in feito sem conexão e
+  # reenviado depois). Só é aceito entre o início da viagem e agora; fora
+  # disso, ou se vier inválido, vale o horário do servidor.
+  def self.recorded_time(raw, trip:)
+    time = Time.zone.iso8601(raw.to_s) rescue nil
+    return Time.current unless time && time.between?(trip.started_at, Time.current)
+
+    time
   end
 end

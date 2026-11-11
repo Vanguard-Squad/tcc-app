@@ -10,7 +10,7 @@ module Students
     end
 
     def create
-      Checkin.today_for!(student: @student, vehicle: @trip.vehicle).advance!(@step, @trip.direction)
+      Checkin.today_for!(student: @student, vehicle: @trip.vehicle).advance!(@step, @trip.direction, at: Checkin.recorded_time(params[:recorded_at], trip: @trip))
       @trip.broadcast_state("checkin")
       audit("checkin.qr_registered", @trip, etapa: Checkin::STEP_LABELS.fetch(@step))
       redirect_to students_trip_path, notice: "#{Checkin::STEP_LABELS.fetch(@step)}: registrado pelo QR code."

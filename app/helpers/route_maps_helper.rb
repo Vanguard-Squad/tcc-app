@@ -5,6 +5,7 @@ module RouteMapsHelper
     list = stops.map do |stop|
       { id: stop.id, step: stop.step, label: stop.address.label_with_city, lat: stop.address.latitude, lng: stop.address.longitude }
     end
-    direction.to_s == "return" ? list.reverse : list
+    # `trip.direction` devolve a chave do enum ("return_trip"); o valor gravado é "return".
+    Trip.directions.fetch(direction.to_s, direction.to_s) == "return" ? list.reverse : list
   end
 end

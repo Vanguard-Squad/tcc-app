@@ -14,7 +14,7 @@
     </div>
 
     <div class="trip-hero-actions">
-      <%= button_to Checkin::STEP_LABELS.fetch(@step), students_qr_checkin_path, params: { token: params[:token] }, class: "btn btn-go btn-large btn-block", form_class: "inline-form full-width-form" %>
+      <%= button_to Checkin::STEP_LABELS.fetch(@step), students_qr_checkin_path, params: { token: params[:token] }, class: "btn btn-go btn-large btn-block", form_class: "inline-form full-width-form", form: { data: { controller: "offline-checkin", action: "submit->offline-checkin#submit turbo:fetch-request-error->offline-checkin#failed" } } %>
       <%= link_to "Cancelar", students_trip_path, class: "btn btn-secondary btn-large btn-block" %>
     </div>
   </section>

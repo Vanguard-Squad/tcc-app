@@ -10,7 +10,7 @@ module Students
       return redirect_to students_trip_path, alert: "Não há viagem em andamento no seu ônibus." unless trip
       return redirect_to students_trip_path, alert: "Etapa inválida para esta viagem." unless Checkin.steps_for(trip.direction).include?(step)
 
-      Checkin.today_for!(student: student, vehicle: trip.vehicle).advance!(step, trip.direction)
+      Checkin.today_for!(student: student, vehicle: trip.vehicle).advance!(step, trip.direction, at: Checkin.recorded_time(params[:recorded_at], trip: trip))
       trip.broadcast_state("checkin")
       audit("checkin.registered", trip, etapa: Checkin::STEP_LABELS.fetch(step))
       redirect_to students_trip_path, notice: "#{Checkin::STEP_LABELS.fetch(step)}: registrado."

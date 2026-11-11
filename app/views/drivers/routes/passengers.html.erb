@@ -17,7 +17,7 @@
   <% else %>
     <% [ [ "Ida", "Embarque no ponto, desembarque na faculdade", "outbound", @grouping.outbound ],
          [ "Volta", "Embarque na faculdade, desembarque no ponto", "return", @grouping.return_leg ] ].each do |title, subtitle, direction, leg| %>
-      <% trip_here = @active_trip&.direction == direction %>
+      <% trip_here = @active_trip && Trip.directions[@active_trip.direction] == direction %>
       <section class="panel <%= "panel-live" if trip_here %>">
         <div class="panel-header">
           <div>
